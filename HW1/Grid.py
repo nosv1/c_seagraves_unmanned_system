@@ -22,7 +22,12 @@ class Grid:
         nodes = []
         for row in range(int(self.max_x / self.grid_spacing + 1)):
             for col in range(int(self.max_y / self.grid_spacing + 1)):
-                nodes.append(Node(row, col, index=self.calculate_node_index(row, col)))
+                node = Node(
+                    x=col * self.grid_spacing,
+                    y=row * self.grid_spacing,
+                )
+                node.index = self.calculate_node_index(node.x, node.y)
+                nodes.append(node)
         return nodes
 
     def calculate_node_index(self, x: float, y: float) -> int:
@@ -33,7 +38,11 @@ class Grid:
         :return: index of the node
         """
         # index = row_len * y + x
-        return int(((self.max_x / self.grid_spacing) + 1) * y + x)
+        return int(
+            ((self.max_x / self.grid_spacing) + 1) *  # row len * 
+            (y / self.grid_spacing) +                 # y +
+            (x / self.grid_spacing)                   # x
+        )
 
     ############################################################################
     # PLOT
@@ -43,17 +52,17 @@ class Grid:
         Plots the nodes in the grid
         """
         for node in self.nodes:
-            self.ax.text(node.x * self.grid_spacing, node.y * self.grid_spacing, node.index, color="red", fontsize="8")
+            self.ax.text(node.x, node.y, node.index, color="red", fontsize="8")
 
     def plot(self):
         self.ax.set_title(f"Node Grid\nGrid Spacing: {self.grid_spacing}")
-        self.ax.set_xlim(0, self.max_x + self.grid_spacing)
-        self.ax.set_ylim(0, self.max_y + self.grid_spacing)
         self.ax.set_ylabel("Y")
         self.ax.set_xlabel("X")
+        self.ax.set_xlim(0, self.max_x + self.grid_spacing)
+        self.ax.set_ylim(0, self.max_y + self.grid_spacing)
         
         self.plot_nodes()
         plt.show()
         plt.close()
-        
+
     ############################################################################
