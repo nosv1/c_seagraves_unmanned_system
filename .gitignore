@@ -1,0 +1,12 @@
+# LATEX FILES
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
+
+# pycache
+*.pyc
+
+# vscode
+launch.json
