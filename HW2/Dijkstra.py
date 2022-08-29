@@ -37,9 +37,7 @@ class Dijkstra:
                 y=self.current_node.y + move[1],
             )
             neighbor.index = self.grid.calculate_node_index(neighbor.x, neighbor.y)
-
-            if self.current_node == neighbor:
-                continue
+            
             if not self.grid.node_is_valid(neighbor):
                 continue
 
