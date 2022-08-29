@@ -10,19 +10,16 @@ class Grid:
         max_y: int, 
         grid_spacing: float, 
         obstacles: list[Node], 
-        obstacle_radius: float
+        bot_radius: float
     ) -> None:
         self.max_x = max_x
         self.max_y = max_y
         self.grid_spacing = grid_spacing
         self.obstacles = obstacles
-        self.obstacle_radius = obstacle_radius
+        self.bot_radius = bot_radius
         self.nodes = self.get_nodes()
 
         self.fig, self.ax = plt.subplots()
-
-        if obstacles:
-            assert self.node_in_obstacle(obstacles[0]) == True
         
     ############################################################################
 
@@ -55,6 +52,9 @@ class Grid:
             (x / self.grid_spacing)                   # x
         )
 
+    ############################################################################
+    # NODE VALIDITY
+
     def node_in_obstacle(self, position: Node) -> bool:
         """
         Checks if a position is in an obstacle
@@ -62,9 +62,31 @@ class Grid:
         :return: True if in obstacle, False otherwise
         """
         for obstacle in self.obstacles:
-            if position.distance(obstacle) <= self.obstacle_radius:
+            if position.distance(obstacle) <= self.bot_radius:
                 return True
         return False
+        
+    def node_in_bounds(self, position: Node) -> bool:
+        """
+        Checks if a position is in the bounds of the grid
+        :param position: position to check
+        :return: True if in bounds, False otherwise
+        """
+        return (
+            0 + self.bot_radius <= position.x <= self.max_x - self.bot_radius and
+            0 + self.bot_radius <= position.y <= self.max_y - self.bot_radius
+        )
+
+    def node_is_valid(self, position: Node) -> bool:
+        """
+        Checks if a position is valid
+        :param position: position to check
+        :return: True if valid, False otherwise
+        """
+        return (
+            self.node_in_bounds(position) and 
+            not self.node_in_obstacle(position)
+        )        
 
     ############################################################################
     # PLOT
@@ -86,11 +108,12 @@ class Grid:
                 obstacle.y,
                 f"({obstacle.x}, {obstacle.y})",
                 ha="center",
-                va="center"
+                va="center",
+                fontsize=12
             )
             self.ax.add_artist(plt.Circle(
                 (obstacle.x, obstacle.y),
-                self.obstacle_radius,
+                self.bot_radius,
                 color="red",
                 fill=False
             ))
@@ -98,7 +121,7 @@ class Grid:
     def plot(self):
         self.ax.set_title(
             f"Valid Positions (obstacles)\n" \
-            f"Grid Spacing: {self.grid_spacing}, Obstacle Radius: {self.obstacle_radius}"
+            f"Grid Spacing: {self.grid_spacing}, Obstacle Radius: {self.bot_radius}"
         )
         self.ax.set_ylabel("Y")
         self.ax.set_xlabel("X")

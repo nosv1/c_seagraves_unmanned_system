@@ -43,12 +43,36 @@ class Grid:
         :return: True if in obstacle, False otherwise
         """
         for obstacle in self.obstacles:
-            if position.distance(obstacle) <= self.obstacle_radius:
+            if position.distance(obstacle) <= self.bot_radius:
                 return True
         return False
+        
+    def node_in_bounds(self, position: Node) -> bool:
+        """
+        Checks if a position is in the bounds of the grid
+        :param position: position to check
+        :return: True if in bounds, False otherwise
+        """
+        return (
+            0 + self.bot_radius <= position.x <= self.max_x - self.bot_radius and
+            0 + self.bot_radius <= position.y <= self.max_y - self.bot_radius
+        )
+
+    def node_is_valid(self, position: Node) -> bool:
+        """
+        Checks if a position is valid
+        :param position: position to check
+        :return: True if valid, False otherwise
+        """
+        return (
+            self.node_in_bounds(position) and 
+            not self.node_in_obstacle(position)
+        )      
         \end{lstlisting}
     \end{minipage}
-    \includegraphics[height=3in]{HW2P1 Valid Positions.png}
+    \begin{center}
+    \includegraphics[height=5in]{HW2P1 Valid Positions.png}
+    \end{center}
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 \end{document}
