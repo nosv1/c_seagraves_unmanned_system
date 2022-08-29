@@ -1,11 +1,18 @@
 class Node:
     def __init__(
-        self, x: float, y: float, parent_cost: float=None, index: int=None
+        self, x: float, y: float, cost: float=0, parent_index: int=None
     ):
         self.x = x
         self.y = y
-        self.parent_cost = parent_cost
-        self.index = index
+        self.cost = cost
+        self.parent_index = parent_index
+        self.index: int = None
+
+    def __eq__(self, other) -> bool:
+        """
+        Checks if two nodes are equal
+        """
+        return self.x == other.x and self.y == other.y
 
     ############################################################################
 

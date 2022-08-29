@@ -20,59 +20,21 @@
         \raggedright
         ./Grid.py \break
         \url{https://github.com/nosv1/seagraves_unmanned_systems/blob/main/HW2/Grid.py}
-        \lstset{
-            frame=tb,
-            language=Python,
-            tabsize=4,
-            numbers=left,
-            basicstyle=\small\ttfamily,
-            numberstyle=\tiny\color{gray},
-            keywordstyle=\color{blue},
-            commentstyle=\color{gray},
-            stringstyle=\color{darkgreen}
-        }
-        \begin{lstlisting}
-class Grid:
+        \end{minipage}
+        \begin{center}
+            \includegraphics[height=5in]{HW2P1 Valid Positions.png}
+        \end{center}
+    % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+    
+        \section*{Problem 2}
+        \begin{minipage}{\linewidth}
+            \raggedright
+            ./Dijkstra.py \break
+            \url{https://github.com/nosv1/seagraves_unmanned_systems/blob/main/HW2/Dijkstra.py}
+            \begin{center}
+                \includegraphics[width=\linewidth]{HW2P2 Dijkstra.png}
+            \end{center}
+        \end{minipage}
 
-    ...
-
-    def node_in_obstacle(self, position: Node) -> bool:
-        """
-        Checks if a position is in an obstacle
-        :param position: position to check
-        :return: True if in obstacle, False otherwise
-        """
-        for obstacle in self.obstacles:
-            if position.distance(obstacle) <= self.bot_radius:
-                return True
-        return False
-        
-    def node_in_bounds(self, position: Node) -> bool:
-        """
-        Checks if a position is in the bounds of the grid
-        :param position: position to check
-        :return: True if in bounds, False otherwise
-        """
-        return (
-            0 + self.bot_radius <= position.x <= self.max_x - self.bot_radius and
-            0 + self.bot_radius <= position.y <= self.max_y - self.bot_radius
-        )
-
-    def node_is_valid(self, position: Node) -> bool:
-        """
-        Checks if a position is valid
-        :param position: position to check
-        :return: True if valid, False otherwise
-        """
-        return (
-            self.node_in_bounds(position) and 
-            not self.node_in_obstacle(position)
-        )      
-        \end{lstlisting}
-    \end{minipage}
-    \begin{center}
-    \includegraphics[height=5in]{HW2P1 Valid Positions.png}
-    \end{center}
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 \end{document}
