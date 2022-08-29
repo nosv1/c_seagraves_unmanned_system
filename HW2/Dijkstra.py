@@ -21,34 +21,38 @@ class Dijkstra:
         """
         Adds neighbors of the current node to the unvisited nodes list
         """
-        for x in np.arange(
-            self.current_node.x - self.grid.grid_spacing, 
-            self.current_node.x + self.grid.grid_spacing * 2,
-            self.grid.grid_spacing
-        ):
-            for y in np.arange(
-                self.current_node.y - self.grid.grid_spacing, 
-                self.current_node.y + self.grid.grid_spacing * 2,
-                self.grid.grid_spacing
-            ):
-                neighbor: Node = Node(x=x, y=y)
-                neighbor.index = self.grid.calculate_node_index(neighbor.x, neighbor.y)
+        move_list = [
+            (-self.grid.grid_spacing, -self.grid.grid_spacing),  # left bottom
+            (-self.grid.grid_spacing, 0),                        # left center
+            (-self.grid.grid_spacing, self.grid.grid_spacing),   # left top
+            (0, -self.grid.grid_spacing),                        # center bottom
+            (0, self.grid.grid_spacing),                         # center top
+            (self.grid.grid_spacing, -self.grid.grid_spacing),   # right bottom
+            (self.grid.grid_spacing, 0),                         # right center
+            (self.grid.grid_spacing, self.grid.grid_spacing),    # right top
+        ]
+        for move in move_list:
+            neighbor: Node = Node(
+                x=self.current_node.x + move[0],
+                y=self.current_node.y + move[1],
+            )
+            neighbor.index = self.grid.calculate_node_index(neighbor.x, neighbor.y)
 
-                if self.current_node == neighbor:
-                    continue
-                if not self.grid.node_is_valid(neighbor):
-                    continue
+            if self.current_node == neighbor:
+                continue
+            if not self.grid.node_is_valid(neighbor):
+                continue
 
-                neighbor.cost = self.current_node.cost + neighbor.distance(self.current_node)
+            neighbor.cost = self.current_node.cost + neighbor.distance(self.current_node)
 
-                if neighbor.index in self.unvisited_nodes:
-                    if neighbor.cost < self.unvisited_nodes[neighbor.index].cost:
-                        self.unvisited_nodes[neighbor.index].cost = neighbor.cost
-                        self.unvisited_nodes[neighbor.index].parent_index = self.current_node.index
-
-                elif neighbor.index not in self.visited_nodes:
-                    self.unvisited_nodes[neighbor.index] = neighbor
+            if neighbor.index in self.unvisited_nodes:
+                if neighbor.cost < self.unvisited_nodes[neighbor.index].cost:
+                    self.unvisited_nodes[neighbor.index].cost = neighbor.cost
                     self.unvisited_nodes[neighbor.index].parent_index = self.current_node.index
+
+            elif neighbor.index not in self.visited_nodes:
+                self.unvisited_nodes[neighbor.index] = neighbor
+                self.unvisited_nodes[neighbor.index].parent_index = self.current_node.index
 
     def find_path(self) -> list[Node]:
         """

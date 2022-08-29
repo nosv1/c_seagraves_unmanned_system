@@ -32,7 +32,7 @@ def main():
     fig, ax = plt.subplots()
 
     ax.set_title(
-        f"Dijkstra\n" \
+        f"Dijkstra (no inflation)\n" \
         f"Grid Spacing: {grid.grid_spacing}, Obstacle Radius: {grid.obstacle_radius}"
     )
     ax.set_ylabel("Y")
