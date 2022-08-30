@@ -1,4 +1,5 @@
 from Node import Node
+from Obstacle import Obstacle
 
 ################################################################################
 
@@ -7,14 +8,12 @@ class Grid:
         max_x: int, 
         max_y: int, 
         grid_spacing: float, 
-        obstacles: list[Node], 
-        obstacle_radius: float
+        obstacles: list[Obstacle]
     ) -> None:
         self.max_x = max_x
         self.max_y = max_y
         self.grid_spacing = grid_spacing
         self.obstacles = obstacles
-        self.obstacle_radius = obstacle_radius
         self.nodes = self.get_nodes()
         
     ############################################################################
@@ -57,10 +56,7 @@ class Grid:
         :param position: position to check
         :return: True if in obstacle, False otherwise
         """
-        for obstacle in self.obstacles:
-            if position.distance(obstacle) <= self.obstacle_radius:
-                return True
-        return False
+        return any(obstacle.is_colliding(position) for obstacle in self.obstacles)
         
     def node_in_bounds(self, position: Node) -> bool:
         """
