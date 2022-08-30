@@ -1,8 +1,6 @@
 from Node import Node
 from Obstacle import Obstacle
 
-################################################################################
-
 class Grid:
     def __init__(self, 
         max_x: int, 

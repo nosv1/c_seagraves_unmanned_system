@@ -12,16 +12,16 @@ def main():
         max_y=10,
         grid_spacing=0.5,
         obstacles=[
-            Obstacle(Node(x=1, y=1), radius=obstacle_radius),
-            Obstacle(Node(x=4, y=4), radius=obstacle_radius),
-            Obstacle(Node(x=3, y=4), radius=obstacle_radius),
-            Obstacle(Node(x=5, y=0), radius=obstacle_radius),
-            Obstacle(Node(x=5, y=1), radius=obstacle_radius),
-            Obstacle(Node(x=0, y=7), radius=obstacle_radius),
-            Obstacle(Node(x=1, y=7), radius=obstacle_radius),
-            Obstacle(Node(x=2, y=7), radius=obstacle_radius),
-            Obstacle(Node(x=3, y=7), radius=obstacle_radius),
-        ]
+            Obstacle(x=1, y=1, radius=obstacle_radius),
+            Obstacle(x=4, y=4, radius=obstacle_radius),
+            Obstacle(x=3, y=4, radius=obstacle_radius),
+            Obstacle(x=5, y=0, radius=obstacle_radius),
+            Obstacle(x=5, y=1, radius=obstacle_radius),
+            Obstacle(x=0, y=7, radius=obstacle_radius),
+            Obstacle(x=1, y=7, radius=obstacle_radius),
+            Obstacle(x=2, y=7, radius=obstacle_radius),
+            Obstacle(x=3, y=7, radius=obstacle_radius),
+        ],
     )
     start: Node = Node(x=0, y=0, parent_index=-1)
     goal: Node = Node(x=8, y=9)
@@ -29,7 +29,9 @@ def main():
     dijkstra: Dijkstra = Dijkstra(grid, start, goal)
     dijkstra.find_path()
 
+    ############################################################################
     # PLOT
+
     fig, ax = plt.subplots()
 
     ax.set_title(f"Dijkstra (no inflation)")
@@ -50,7 +52,7 @@ def main():
     # plot obstacles
     for obstacle in grid.obstacles:
         ax.add_artist(plt.Circle(
-            (obstacle.node.x, obstacle.node.y),
+            (obstacle.x, obstacle.y),
             obstacle.radius,
             color="red",
             fill=False
