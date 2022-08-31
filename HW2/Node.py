@@ -1,11 +1,13 @@
+from __future__ import annotations
+
 class Node:
     def __init__(
-        self, x: float, y: float, cost: float=0, parent_index: int=None
+        self, x: float, y: float, cost: float=0, parent: Node=None
     ):
         self.x = x
         self.y = y
         self.cost = cost
-        self.parent_index = parent_index
+        self.parent = parent
         self.index: int = None
 
     def __eq__(self, other) -> bool:

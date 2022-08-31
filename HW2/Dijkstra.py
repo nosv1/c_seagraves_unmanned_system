@@ -1,5 +1,3 @@
-import numpy as np
-
 from Grid import Grid
 from Node import Node
 
@@ -35,6 +33,7 @@ class Dijkstra:
             neighbor: Node = Node(
                 x=self.current_node.x + move[0],
                 y=self.current_node.y + move[1],
+                parent=self.current_node
             )
             neighbor.index = self.grid.calculate_node_index(neighbor.x, neighbor.y)
             
@@ -43,14 +42,15 @@ class Dijkstra:
 
             neighbor.cost = self.current_node.cost + neighbor.distance(self.current_node)
 
+            # if we're already in unvisted, update cost and parent as needed
             if neighbor.index in self.unvisited_nodes:
                 if neighbor.cost < self.unvisited_nodes[neighbor.index].cost:
                     self.unvisited_nodes[neighbor.index].cost = neighbor.cost
-                    self.unvisited_nodes[neighbor.index].parent_index = self.current_node.index
+                    self.unvisited_nodes[neighbor.index].parent = self.current_node
 
+            # otherwise add to unvisited
             elif neighbor.index not in self.visited_nodes:
                 self.unvisited_nodes[neighbor.index] = neighbor
-                self.unvisited_nodes[neighbor.index].parent_index = self.current_node.index
 
     def find_path(self) -> list[Node]:
         """
@@ -80,5 +80,5 @@ class Dijkstra:
             self.grid.calculate_node_index(self.goal.x, self.goal.y)
         ]
         self.path = [self.visited_nodes[self.grid.calculate_node_index(self.goal.x, self.goal.y)]]
-        while self.path[-1].parent_index != -1:
-            self.path.append(self.visited_nodes[self.path[-1].parent_index])
+        while self.path[-1].parent:
+            self.path.append(self.visited_nodes[self.path[-1].parent.index])

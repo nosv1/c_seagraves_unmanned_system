@@ -3,12 +3,16 @@ from Obstacle import Obstacle
 
 class Grid:
     def __init__(self, 
-        max_x: int, 
+        min_x: int,
+        max_x: int,
+        min_y: int,
         max_y: int, 
         grid_spacing: float, 
         obstacles: list[Obstacle]
     ) -> None:
+        self.min_x = min_x
         self.max_x = max_x
+        self.min_y = min_y
         self.max_y = max_y
         self.grid_spacing = grid_spacing
         self.obstacles = obstacles
@@ -45,6 +49,22 @@ class Grid:
             (x / self.grid_spacing)                   # x
         )
 
+    def inflate_obstacles(self, inflation_amount: float):
+        """
+        Inflate every obstacle's radius by the inflation amount
+        """
+        for obstacle in self.obstacles:
+            obstacle.radius += inflation_amount
+
+    def shrink_bounds(self, shrink_amount: float):
+        """
+        Shrink the bounds of the grid by the shrink amount
+        """
+        self.min_x += shrink_amount
+        self.max_x -= shrink_amount
+        self.min_y += shrink_amount
+        self.max_y -= shrink_amount
+
     ############################################################################
     # NODE VALIDITY
 
@@ -63,8 +83,10 @@ class Grid:
         :return: True if in bounds, False otherwise
         """
         return (
-            0 <= position.x <= self.max_x and
-            0 <= position.y <= self.max_y
+            position.x >= self.min_x and
+            position.x <= self.max_x and
+            position.y >= self.min_y and
+            position.y <= self.max_y
         )
 
     def node_is_valid(self, position: Node) -> bool:
