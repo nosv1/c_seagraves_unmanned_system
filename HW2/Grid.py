@@ -31,7 +31,7 @@ class Grid:
                     x=col * self.grid_spacing,
                     y=row * self.grid_spacing,
                 )
-                node.parent_index = self.calculate_node_index(node.x, node.y)
+                node.parent_index = self.calculate_node_index(node._x, node._y)
                 nodes.append(node)
         return nodes
 
@@ -83,10 +83,10 @@ class Grid:
         :return: True if in bounds, False otherwise
         """
         return (
-            position.x >= self.min_x and
-            position.x <= self.max_x and
-            position.y >= self.min_y and
-            position.y <= self.max_y
+            position._x >= self.min_x and
+            position._x <= self.max_x and
+            position._y >= self.min_y and
+            position._y <= self.max_y
         )
 
     def node_is_valid(self, position: Node) -> bool:

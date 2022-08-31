@@ -37,18 +37,18 @@ def problem_1(ax, grid):
 
     # plot check nodes
     for node in check_nodes:
-        ax.plot(node.x, node.y, 'bo')
+        ax.plot(node._x, node._y, 'bo')
         ax.text(
-            node.x,
-            node.y + grid.grid_spacing / 4,
+            node._x,
+            node._y + grid.grid_spacing / 4,
             "Valid" if grid.node_is_valid(node) else "Invalid",
             ha="center",
             fontsize=8
         )        
         ax.text(
-            node.x,
-            node.y - grid.grid_spacing / 2,
-            f"({node.x}, {node.y})",
+            node._x,
+            node._y - grid.grid_spacing / 2,
+            f"({node._x}, {node._y})",
             ha="center",
             fontsize=8
         )
@@ -68,12 +68,12 @@ def problem_2(ax, grid):
     ax.set_title(f"Dijkstra (no inflation)")
 
     # plot start and goal
-    ax.plot(start.x, start.y, "bo")
-    ax.plot(goal.x, goal.y, "ro")
+    ax.plot(start._x, start._y, "bo")
+    ax.plot(goal._x, goal._y, "ro")
 
     # plot path
-    path_x = [n.x for n in dijkstra.path]
-    path_y = [n.y for n in dijkstra.path]
+    path_x = [n._x for n in dijkstra.path]
+    path_y = [n._y for n in dijkstra.path]
     ax.plot(path_x, path_y, "r-")
 
     # plot obstacles
@@ -88,8 +88,8 @@ def problem_2(ax, grid):
     # plot dijkstra visited nodes
     for node in dijkstra.visited_nodes.values():
         ax.text(
-            node.x, 
-            node.y, 
+            node._x, 
+            node._y, 
             f"{node.cost:.1f}", 
             ha="center", 
             va="center",
@@ -115,18 +115,18 @@ def problem_3(ax, grid: Grid):
     ax.set_title(f"Dijkstra (inflation)")
 
     # plot start and goal
-    ax.plot(start.x, start.y, "bo")
-    ax.plot(goal.x, goal.y, "ro")
+    ax.plot(start._x, start._y, "bo")
+    ax.plot(goal._x, goal._y, "ro")
 
     # plot path
-    path_x = [n.x for n in dijkstra.path]
-    path_y = [n.y for n in dijkstra.path]
+    path_x = [n._x for n in dijkstra.path]
+    path_y = [n._y for n in dijkstra.path]
     ax.plot(path_x, path_y, "r-")
 
     # plot obstacles
     for obstacle in grid.obstacles:
         ax.add_artist(plt.Circle(
-            (obstacle.x, obstacle.y),
+            (obstacle._x, obstacle._y),
             obstacle.radius,
             color="red",
             fill=True
@@ -135,8 +135,8 @@ def problem_3(ax, grid: Grid):
     # plot dijkstra visited nodes
     for node in dijkstra.visited_nodes.values():
         ax.text(
-            node.x, 
-            node.y, 
+            node._x, 
+            node._y, 
             f"{node.cost:.1f}", 
             ha="center", 
             va="center",

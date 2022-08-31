@@ -8,11 +8,8 @@ class Dijkstra:
         self.grid = grid
 
         self.current_node: Node = start
-        self.current_node.index = self.grid.calculate_node_index(
-            self.current_node.x, self.current_node.y
-        )
         self.unvisited_nodes: dict[int, Node] = {
-            self.current_node.index: self.current_node
+            self.current_node._id: self.current_node
         }
         self.visited_nodes: dict[int, Node] = {}
         self.path: list[Node] = []
@@ -38,11 +35,10 @@ class Dijkstra:
 
             # define the new neighbor based on the valid move
             neighbor: Node = Node(
-                x=self.current_node.x + move[0],
-                y=self.current_node.y + move[1],
+                x=self.current_node._x + move[0],
+                y=self.current_node._y + move[1],
                 parent=self.current_node
             )
-            neighbor.index = self.grid.calculate_node_index(neighbor.x, neighbor.y)
             
             # check if neighbor's position is valid
             if not self.grid.node_is_valid(neighbor):
@@ -51,14 +47,14 @@ class Dijkstra:
             neighbor.cost = self.current_node.cost + neighbor.distance(self.current_node)
 
             # if we've noted this neighbor already as been unvisted, update cost and parent as needed
-            if neighbor.index in self.unvisited_nodes:
-                if neighbor.cost < self.unvisited_nodes[neighbor.index].cost:
-                    self.unvisited_nodes[neighbor.index].cost = neighbor.cost
-                    self.unvisited_nodes[neighbor.index].parent = self.current_node
+            if neighbor._id in self.unvisited_nodes:
+                if neighbor.cost < self.unvisited_nodes[neighbor._id].cost:
+                    self.unvisited_nodes[neighbor._id].cost = neighbor.cost
+                    self.unvisited_nodes[neighbor._id].parent = self.current_node
 
             # otherwise add to unvisited
-            elif neighbor.index not in self.visited_nodes:
-                self.unvisited_nodes[neighbor.index] = neighbor
+            elif neighbor._id not in self.visited_nodes:
+                self.unvisited_nodes[neighbor._id] = neighbor
 
     def find_path(self) -> list[Node]:
         """
@@ -70,26 +66,21 @@ class Dijkstra:
         """
         while self.unvisited_nodes.keys():
             # visit current node
-            self.visited_nodes[self.current_node.index] = self.current_node
+            self.visited_nodes[self.current_node._id] = self.current_node
 
             # get lowest cost unvisited node
             self.current_node = min(self.unvisited_nodes.values(), key=lambda x: x.cost)
-            self.current_node.index = self.grid.calculate_node_index(
-                self.current_node.x, self.current_node.y
-            )
 
             # remove old node from unvisited nodes
-            del self.unvisited_nodes[self.current_node.index]
+            del self.unvisited_nodes[self.current_node._id]
 
             # add neighbors of current node to unvisited nodes, updating costs and parent as necessary
             self.add_neighbors_to_unvisited_nodes()
-        self.visited_nodes[self.current_node.index] = self.current_node
+        self.visited_nodes[self.current_node._id] = self.current_node
 
         # backtrack to find path starting at the goal node
         self.path = [
-            self.visited_nodes[
-                self.grid.calculate_node_index(self.goal.x, self.goal.y)
-            ]
+            self.visited_nodes[self.goal._id]
         ]
         while self.path[-1].parent:
-            self.path.append(self.visited_nodes[self.path[-1].parent.index])
+            self.path.append(self.visited_nodes[self.path[-1].parent._id])

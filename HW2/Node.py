@@ -4,24 +4,24 @@ class Node:
     def __init__(
         self, x: float, y: float, cost: float=0, parent: Node=None
     ):
-        self.x = x
-        self.y = y
+        self._x = x
+        self._y = y
         self.cost = cost
         self.parent = parent
-        self.index: int = None
+        self._id: str = f"({self._x:.1f}, {self._y:.1f})"
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: Node) -> bool:
         """
         Checks if two nodes are equal
         """
-        return self.x == other.x and self.y == other.y
+        return self._x == other.x and self._y == other.y
 
     ############################################################################
 
-    def distance(self, other) -> float:
+    def distance(self, other: Node) -> float:
         """
         Calculates the ecuclidean distance between two nodes
         """
-        return ((self.x - other.x) ** 2 + (self.y - other.y) ** 2) ** 0.5
+        return ((self._x - other._x) ** 2 + (self._y - other._y) ** 2) ** 0.5
         
     ############################################################################
