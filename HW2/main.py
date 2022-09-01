@@ -1,11 +1,21 @@
+from datetime import datetime
+import logging
 import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 
 from Dijkstra import Dijkstra
 from Grid import Grid
 from Node import Node
 from Obstacle import Obstacle
 
-def problem_1(ax, grid):
+def setup_logging():
+    logging.basicConfig(
+        filename=f"HW2/Logs/{datetime.now().strftime('%Y-%m-%d %H-%M-%S')}.log", 
+        level=logging.INFO
+    )
+    logging.info("Started")
+
+def problem_1(ax, grid: Grid):
     check_nodes = [
         Node(2, 2),
         Node(3, 3.5),
@@ -119,9 +129,9 @@ def problem_3(ax, grid: Grid):
     ax.plot(goal._x, goal._y, "ro")
 
     # plot path
-    path_x = [n._x for n in dijkstra.path]
-    path_y = [n._y for n in dijkstra.path]
-    ax.plot(path_x, path_y, "r-")
+    # path_x = [n._x for n in dijkstra.path]
+    # path_y = [n._y for n in dijkstra.path]
+    # ax.plot(path_x, path_y, "r-")
 
     # plot obstacles
     for obstacle in grid.obstacles:
@@ -145,7 +155,101 @@ def problem_3(ax, grid: Grid):
 
     return ax
 
+def plot_animation(fig, ax):
+    log_filename: str = logging.getLogger().handlers[0].baseFilename
+    logging.info("Finished")
+    logging.shutdown()
+
+    with open(log_filename, "r") as f:
+        lines = f.readlines()
+
+    light_blue = "#ADD8E6"
+    dark_grey = "#A9A9A9"
+    green = "#008000"
+    dark_red = "#8B0000"
+
+    path_line, = ax.plot([], [], "-", color=light_blue)
+    unvisted_neighbors_plot, = ax.plot([], [], "o", color=green)
+    visited_neighbors_plot, = ax.plot([], [], "o", color=dark_grey)
+    invalid_neighbors_plot, = ax.plot([], [], "o", color=dark_red)
+
+    neighbor_frames = []
+    path_frames = []
+
+    unvisted_neighbors: list[tuple] = []
+    visited_neighbors: list[tuple] = []
+    invalid_neighbors: list[tuple] = []
+    
+    for line in lines:
+        if ":Path:" in line:
+            path_frames = eval(f"[{line.split(':Path:')[1]}]")[::-1]
+
+        elif ":Neighbors:" in line:
+            if ":Discovering neighbors..." in line:
+                neighbor_frames.append(
+                    {
+                        "unvisted_neighbors": unvisted_neighbors.copy(),
+                        "visited_neighbors": visited_neighbors.copy(),
+                        "invalid_neighbors": invalid_neighbors.copy()
+                    }
+                )
+                unvisted_neighbors = []
+                visited_neighbors = []
+                invalid_neighbors = []
+
+            elif ":Visited Neighbor:" in line:
+                visited_neighbors.append(eval(line.split(":Visited Neighbor:")[1]))
+
+            elif ":Unvisted Neighbor:" in line:
+                unvisted_neighbors.append(eval(line.split(":Unvisted Neighbor:")[1]))
+
+        elif ":Node:" in line:
+            if ":In obstacle:" in line:
+                invalid_neighbors.append(eval(line.split(":In obstacle:")[1]))
+            elif ":Out of bounds:" in line:
+                invalid_neighbors.append(eval(line.split(":Out of bounds:")[1]))
+
+    frames = neighbor_frames + path_frames
+
+    def update(i):
+        if i < len(neighbor_frames):
+            unvisted_neighbors_plot.set_data(
+                [n[0] for n in neighbor_frames[i]["unvisted_neighbors"]],
+                [n[1] for n in neighbor_frames[i]["unvisted_neighbors"]]
+            )
+            visited_neighbors_plot.set_data(
+                [n[0] for n in neighbor_frames[i]["visited_neighbors"]],
+                [n[1] for n in neighbor_frames[i]["visited_neighbors"]]
+            )
+            invalid_neighbors_plot.set_data(
+                [n[0] for n in neighbor_frames[i]["invalid_neighbors"]],
+                [n[1] for n in neighbor_frames[i]["invalid_neighbors"]]
+            )
+            return unvisted_neighbors_plot, visited_neighbors_plot, invalid_neighbors_plot
+
+        else:
+            path_line.set_data(
+                [n[0] for n in path_frames[:i-len(neighbor_frames)]],
+                [n[1] for n in path_frames[:i-len(neighbor_frames)]]
+            )
+            return path_line,
+
+    animation = FuncAnimation(
+        fig, 
+        update, 
+        frames=len(neighbor_frames) + len(path_frames) + 30, 
+        repeat=False, 
+        interval=20, blit=True
+    )
+    animation.save(
+        "animation.gif", 
+        writer="Pillow", 
+        fps=30, 
+        progress_callback=lambda i, n: print(f"Saving frame {i} of {n}")
+    )
+
 def main():
+    setup_logging()
 
     fig, ax = plt.subplots()
     ax.set_ylabel("Y")
@@ -178,8 +282,7 @@ def main():
     # problem_2(ax, grid)
     problem_3(ax, grid)
 
-    plt.show()
-
+    plot_animation(fig, ax)
 
 if __name__ == "__main__":
     main()

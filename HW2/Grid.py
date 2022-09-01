@@ -1,3 +1,5 @@
+import logging
+
 from Node import Node
 from Obstacle import Obstacle
 
@@ -38,6 +40,7 @@ class Grid:
     def calculate_node_index(self, x: float, y: float) -> int:
         """
         Calculates the index of a node in the grid
+        
         :param x: x-coordinate of the node
         :param y: y-coordinate of the node
         :return: index of the node
@@ -95,9 +98,16 @@ class Grid:
         :param position: position to check
         :return: True if valid, False otherwise
         """
-        return (
-            self.node_in_bounds(position) and 
-            not self.node_in_obstacle(position)
-        )        
+        in_bounds = self.node_in_bounds(position)
+        in_obstacle = self.node_in_obstacle(position)
+        is_valid = in_bounds and not in_obstacle
+
+        if not is_valid:
+            if not in_bounds:
+                logging.info(f":Node:Out of bounds: {position}")
+            if in_obstacle:
+                logging.info(f":Node:In obstacle: {position}")
+
+        return is_valid
 
     ############################################################################

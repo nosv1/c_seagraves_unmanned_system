@@ -1,20 +1,42 @@
 from __future__ import annotations
 
+import json
+
 class Node:
     def __init__(
         self, x: float, y: float, cost: float=0, parent: Node=None
     ):
         self._x = x
         self._y = y
+        self._id: str = f"({self._x:.5f}, {self._y:.5f})"
         self.cost = cost
         self.parent = parent
-        self._id: str = f"({self._x:.1f}, {self._y:.1f})"
 
     def __eq__(self, other: Node) -> bool:
         """
         Checks if two nodes are equal
         """
         return self._x == other.x and self._y == other.y
+
+    def __str__(self, simple=True) -> str:
+        """
+        Returns a string representation of the node
+        """
+        if simple:
+            return f"({self._x:.5f}, {self._y:.5f})"
+        else:
+            return json.dumps(self, indent=4, default=lambda o: o.__dict__)
+
+    def from_json(json_str: str) -> Node:
+        """
+        Creates a node from a json string
+        """
+        json_dict = json.loads(json_str)
+        return Node(
+            x=json_dict["_x"],
+            y=json_dict["_y"],
+            cost=json_dict["cost"]
+        )
 
     ############################################################################
 

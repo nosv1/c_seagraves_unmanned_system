@@ -1,11 +1,13 @@
+import logging
+
 from Grid import Grid
 from Node import Node
 
 class Dijkstra:
     def __init__(self, grid: Grid, start: Node, goal: Node) -> None:
+        self.grid = grid
         self.start = start
         self.goal = goal
-        self.grid = grid
 
         self.current_node: Node = start
         self.unvisited_nodes: dict[int, Node] = {
@@ -14,10 +16,14 @@ class Dijkstra:
         self.visited_nodes: dict[int, Node] = {}
         self.path: list[Node] = []
 
+    ############################################################################
+
     def add_neighbors_to_unvisited_nodes(self):
         """
         Adds neighbors of the current node to the unvisited nodes list
         """
+        logging.info(":Neighbors:Discovering neighbors...")
+
         # instead of nested loops, we define a list of valid moves 
         move_list = [
             (-self.grid.grid_spacing, -self.grid.grid_spacing),  # left bottom
@@ -46,15 +52,19 @@ class Dijkstra:
 
             neighbor.cost = self.current_node.cost + neighbor.distance(self.current_node)
 
-            # if we've noted this neighbor already as been unvisted, update cost and parent as needed
+            # if we've noted this neighbor already as being unvisted, update cost and parent as needed
             if neighbor._id in self.unvisited_nodes:
                 if neighbor.cost < self.unvisited_nodes[neighbor._id].cost:
                     self.unvisited_nodes[neighbor._id].cost = neighbor.cost
                     self.unvisited_nodes[neighbor._id].parent = self.current_node
 
+                logging.info(f":Neighbors:Node:Visited Neighbor: {neighbor}")
+
             # otherwise add to unvisited
             elif neighbor._id not in self.visited_nodes:
                 self.unvisited_nodes[neighbor._id] = neighbor
+
+                logging.info(f":Neighbors:Node:Unvisted Neighbor: {neighbor}")
 
     def find_path(self) -> list[Node]:
         """
@@ -64,6 +74,9 @@ class Dijkstra:
         :param: grid: grid to search on
         :return: list of nodes in the shortest path
         """
+        logging.info("Visiting all Nodes...")
+
+        # while there exists unvisted nodes
         while self.unvisited_nodes.keys():
             # visit current node
             self.visited_nodes[self.current_node._id] = self.current_node
@@ -78,9 +91,16 @@ class Dijkstra:
             self.add_neighbors_to_unvisited_nodes()
         self.visited_nodes[self.current_node._id] = self.current_node
 
+        logging.info("All Nodes visited...")
+
         # backtrack to find path starting at the goal node
         self.path = [
             self.visited_nodes[self.goal._id]
         ]
         while self.path[-1].parent:
             self.path.append(self.visited_nodes[self.path[-1].parent._id])
+
+        logging.info("Path found...")
+        logging.info(f":Path: {', '.join([str(node) for node in self.path])}")
+            
+    ############################################################################
