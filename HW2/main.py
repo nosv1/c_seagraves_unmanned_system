@@ -212,11 +212,6 @@ def for_fun(ax, grid: Grid):
     ax.plot(start._x, start._y, "o", color=Colors.green)
     ax.plot(goal._x, goal._y, "o", color=Colors.white)
 
-    # plot path
-    # path_x = [n._x for n in dijkstra.path]
-    # path_y = [n._y for n in dijkstra.path]
-    # ax.plot(path_x, path_y, "r-")
-
     # plot obstacles
     for obstacle in grid.obstacles:
         ax.add_artist(plt.Circle(
@@ -312,14 +307,18 @@ def plot_animation(fig, ax):
                 [n[0] for n in neighbor_frames[i]["invalid_neighbors"]],
                 [n[1] for n in neighbor_frames[i]["invalid_neighbors"]]
             )
-            return unvisted_neighbors_plot, visited_neighbors_plot, invalid_neighbors_plot
+            path_line.set_data([], [])
 
         else:
+            unvisted_neighbors_plot.set_data([], [])
+            visited_neighbors_plot.set_data([], [])
+            invalid_neighbors_plot.set_data([], [])
             path_line.set_data(
                 [n[0] for n in path_frames[:i-len(neighbor_frames)]],
                 [n[1] for n in path_frames[:i-len(neighbor_frames)]]
             )
-            return path_line,
+
+        return unvisted_neighbors_plot, visited_neighbors_plot, invalid_neighbors_plot, path_line,
 
     fig.patch.set_facecolor(Colors.grey)
     ax.set_facecolor(Colors.grey)
