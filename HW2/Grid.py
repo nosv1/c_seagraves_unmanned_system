@@ -19,6 +19,7 @@ class Grid:
         self.grid_spacing = grid_spacing
         self.obstacles = obstacles
         self.nodes = self.get_nodes()
+        self.valid_nodes = self.get_valid_nodes()
         
     ############################################################################
 
@@ -109,5 +110,11 @@ class Grid:
                 logging.info(f":Node:In obstacle: {position}")
 
         return is_valid
+
+    def get_valid_nodes(self) -> list[Node]:
+        """
+        Returns a list of valid nodes
+        """
+        return [node for node in self.nodes if self.node_is_valid(node)]
 
     ############################################################################

@@ -66,6 +66,9 @@ class Dijkstra:
 
                 logging.info(f":Neighbors:Node:Unvisted Neighbor: {neighbor}")
 
+            else:
+                logging.info(f":Neighbors:Node:Visited Neighbor: {neighbor}")
+
     def find_path(self) -> list[Node]:
         """
         Finds the shortest path between two nodes using Dijkstra's algorithm

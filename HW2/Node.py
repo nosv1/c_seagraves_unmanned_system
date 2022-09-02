@@ -16,7 +16,7 @@ class Node:
         """
         Checks if two nodes are equal
         """
-        return self._x == other.x and self._y == other.y
+        return self._x == other._x and self._y == other._y
 
     def __str__(self, simple=True) -> str:
         """
