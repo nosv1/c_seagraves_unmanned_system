@@ -259,7 +259,7 @@ def plot_animation(fig, ax):
     
     for line in lines:
         if ":Path:" in line:
-            path_frames: list[tuple] = eval(f"[{line.split(':Path:')[1]}]")[::-1]
+            path_frames: list[tuple] = eval(f"[{line.split(':Path:')[1]}]")
             i = len(path_frames) - 1
             while i >= 0:
                 for j in range(path_frames_per_frame - 1):
