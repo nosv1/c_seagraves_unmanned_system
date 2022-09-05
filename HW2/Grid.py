@@ -1,4 +1,5 @@
 import logging
+import matplotlib.pyplot as plt
 
 from Node import Node
 from Obstacle import Obstacle
@@ -18,16 +19,16 @@ class Grid:
         self.max_y = max_y
         self.grid_spacing = grid_spacing
         self.obstacles = obstacles
-        self.nodes = self.get_nodes()
-        self.valid_nodes = self.get_valid_nodes()
+
+        self.nodes: dict = self.get_nodes()
         
     ############################################################################
 
-    def get_nodes(self) -> list[Node]:
+    def get_nodes(self) -> dict[str, Node]:
         """
         Creates a list of nodes in the grid
         """
-        nodes = []
+        nodes: dict[str, Node] = {}
         for row in range(int(self.max_x / self.grid_spacing + 1)):
             for col in range(int(self.max_y / self.grid_spacing + 1)):
                 node = Node(
@@ -35,7 +36,7 @@ class Grid:
                     y=row * self.grid_spacing,
                 )
                 node.parent_index = self.calculate_node_index(node._x, node._y)
-                nodes.append(node)
+                nodes[node._id] = node
         return nodes
 
     def calculate_node_index(self, x: float, y: float) -> int:
@@ -60,14 +61,14 @@ class Grid:
         for obstacle in self.obstacles:
             obstacle.radius += inflation_amount
 
-    def shrink_bounds(self, shrink_amount: float):
+    def inflate_bounds(self, inflation_amount: float):
         """
         Shrink the bounds of the grid by the shrink amount
         """
-        self.min_x += shrink_amount
-        self.max_x -= shrink_amount
-        self.min_y += shrink_amount
-        self.max_y -= shrink_amount
+        self.min_x += inflation_amount
+        self.max_x -= inflation_amount
+        self.min_y += inflation_amount
+        self.max_y -= inflation_amount
 
     ############################################################################
     # NODE VALIDITY
@@ -115,6 +116,22 @@ class Grid:
         """
         Returns a list of valid nodes
         """
-        return [node for node in self.nodes if self.node_is_valid(node)]
+        return [node for _id, node in self.nodes.items() if self.node_is_valid(node)]
+
+    ############################################################################
+
+    def plot_obstacles(self, ax: plt.Axes, color: str) -> None:
+        """
+        Plots the obstacles in the grid
+        :param ax: matplotlib axes to plot on
+        :param color: color of the obstacles
+        """
+        for obstacle in self.obstacles:
+            ax.add_artist(plt.Circle(
+                (obstacle._x, obstacle._y),
+                obstacle.radius,
+                color=color,
+                fill=True
+            ))
 
     ############################################################################

@@ -1,4 +1,5 @@
 import logging
+import matplotlib.pyplot as plt
 
 from Grid import Grid
 from Node import Node
@@ -112,5 +113,24 @@ class Dijkstra:
 
         logging.info("Path found...")
         logging.info(f":Path: {', '.join([str(node) for node in self.path])}")
+            
+    ############################################################################
+
+    def plot_visited_nodes(self, ax: plt.Axes, color: str) -> None:
+        """
+        Plots the visited nodes
+        :param: ax: matplotlib axes to plot on
+        :param: color: color to plot the nodes
+        """
+        for node in self.visited_nodes.values():
+            ax.text(
+                node._x, 
+                node._y, 
+                f"{node.cost:.1f}", 
+                ha="center", 
+                va="center",
+                fontsize=6,
+                color=color
+            )
             
     ############################################################################
