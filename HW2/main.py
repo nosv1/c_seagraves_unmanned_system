@@ -323,13 +323,17 @@ def for_fun(fig: plt.figure, ax: plt.Axes, grid: Grid) -> None:
     grid.inflate_bounds(bot_radius)
     valid_nodes = grid.get_valid_nodes()
 
-    # randomize start and goal (validating goal to at least not be in an obstacle)
-    # it's still possible this generates a unsolveable path
+    # randomize start and goal, from valid nodes
+    # still possible this generates unsolveable route
     start = random.choice(valid_nodes)
     while True:
         goal = random.choice(valid_nodes)
+
+        # goal is minimum distance of >= half the map size
         if goal.distance(start) < Node(0, 0).distance(Node(grid.max_x, grid.max_y)) / 2:
             continue
+
+        # goal is not start
         if goal != start:
             break
     

@@ -18,14 +18,14 @@ class Node:
         """
         return self._x == other._x and self._y == other._y
 
-    def __str__(self, simple=True) -> str:
+    def __str__(self, to_json=False) -> str:
         """
         Returns a string representation of the node
         """
-        if simple:
-            return f"({self._x:.5f}, {self._y:.5f})"
-        else:
+        if to_json:
             return json.dumps(self, indent=4, default=lambda o: o.__dict__)
+        else:
+            return f"({self._x:.5f}, {self._y:.5f})"
 
     def from_json(json_str: str) -> Node:
         """
