@@ -94,7 +94,7 @@ class Grid:
             position._y <= self.max_y
         )
 
-    def node_is_valid(self, position: Node) -> bool:
+    def is_valid_node(self, position: Node) -> bool:
         """
         Checks if a position is valid
         :param position: position to check
@@ -116,7 +116,7 @@ class Grid:
         """
         Returns a list of valid nodes
         """
-        return [node for _id, node in self.nodes.items() if self.node_is_valid(node)]
+        return [node for _id, node in self.nodes.items() if self.is_valid_node(node)]
 
     ############################################################################
 

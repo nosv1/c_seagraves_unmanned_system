@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 
 from Grid import Grid
 from Node import Node
+from Stopwatch import Stopwatch
 
 class Dijkstra:
     def __init__(self, grid: Grid, start: Node, goal: Node, do_diagonals=True) -> None:
@@ -17,6 +18,10 @@ class Dijkstra:
         }
         self.visited_nodes: dict[int, Node] = {}
         self.path: list[Node] = []
+
+        self._timings = {
+            "find_path": Stopwatch(),
+        }
 
     ############################################################################
 
@@ -55,7 +60,7 @@ class Dijkstra:
             )
             
             # check if neighbor's position is valid
-            if not self.grid.node_is_valid(neighbor):
+            if not self.grid.is_valid_node(neighbor):
                 continue
 
             neighbor.cost = self.current_node.cost + neighbor.distance(self.current_node)
@@ -86,6 +91,7 @@ class Dijkstra:
         :return: list of nodes in the shortest path
         """
         logging.info("Visiting all Nodes...")
+        self._timings["find_path"].start()
 
         # while there exists unvisted nodes
         while self.unvisited_nodes.keys():
@@ -102,6 +108,8 @@ class Dijkstra:
             self.add_neighbors_to_unvisited_nodes()
         self.visited_nodes[self.current_node._id] = self.current_node
 
+        self._timings["find_path"].stop()
+        logging.info(f"Visited all Nodes in {self._timings['find_path']._total:.3f} seconds")
         logging.info("All Nodes visited...")
 
         # backtrack to find path starting at the goal node
