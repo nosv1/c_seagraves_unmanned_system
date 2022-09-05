@@ -4,10 +4,11 @@ from Grid import Grid
 from Node import Node
 
 class Dijkstra:
-    def __init__(self, grid: Grid, start: Node, goal: Node) -> None:
+    def __init__(self, grid: Grid, start: Node, goal: Node, do_diagonals=True) -> None:
         self.grid = grid
         self.start = start
         self.goal = goal
+        self.do_diagonals = do_diagonals
 
         self.current_node: Node = start
         self.unvisited_nodes: dict[int, Node] = {
@@ -24,17 +25,23 @@ class Dijkstra:
         """
         logging.info(":Neighbors:Discovering neighbors...")
 
-        # instead of nested loops, we define a list of valid moves 
-        move_list = [
+        # instead of nested loops, we define a list of valid moves
+        diagonal_moves = [
             (-self.grid.grid_spacing, -self.grid.grid_spacing),  # left bottom
-            (-self.grid.grid_spacing, 0),                        # left center
             (-self.grid.grid_spacing, self.grid.grid_spacing),   # left top
-            (0, -self.grid.grid_spacing),                        # center bottom
-            (0, self.grid.grid_spacing),                         # center top
             (self.grid.grid_spacing, -self.grid.grid_spacing),   # right bottom
-            (self.grid.grid_spacing, 0),                         # right center
             (self.grid.grid_spacing, self.grid.grid_spacing),    # right top
         ]
+
+        move_list = [
+            (-self.grid.grid_spacing, 0),                        # left center
+            (0, -self.grid.grid_spacing),                        # center bottom
+            (0, self.grid.grid_spacing),                         # center top
+            (self.grid.grid_spacing, 0),                         # right center
+        ]
+
+        if self.do_diagonals:
+            move_list += diagonal_moves
 
         # loop through valid moves to find our neighbors
         for move in move_list:

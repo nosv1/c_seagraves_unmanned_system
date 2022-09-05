@@ -200,7 +200,7 @@ def for_fun(ax, grid: Grid):
         if goal != start:
             break
     
-    dijkstra: Dijkstra = Dijkstra(grid, start, goal)
+    dijkstra: Dijkstra = Dijkstra(grid, start, goal, do_diagonals=False)
     dijkstra.find_path()
 
     ############################################################################
