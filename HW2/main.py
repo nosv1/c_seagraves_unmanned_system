@@ -70,18 +70,18 @@ def problem_1() -> None:
 
     # plot check nodes
     for node in check_nodes:
-        ax.plot(node._x, node._y, 'bo')
+        ax.plot(node.x, node.y, 'bo')
         ax.text(
-            node._x,
-            node._y + grid.grid_spacing / 4,
+            node.x,
+            node.y + grid.grid_spacing / 4,
             "Valid" if grid.is_valid_node(node) else "Invalid",
             ha="center",
             fontsize=8
         )        
         ax.text(
-            node._x,
-            node._y - grid.grid_spacing / 2,
-            f"({node._x}, {node._y})",
+            node.x,
+            node.y - grid.grid_spacing / 2,
+            f"({node.x}, {node.y})",
             ha="center",
             fontsize=8
         )
@@ -127,12 +127,12 @@ def problem_2() -> None:
     ax.set_ylim(grid.min_y - grid.grid_spacing, grid.max_y + grid.grid_spacing)
 
     # plot start and goal
-    ax.plot(start._x, start._y, "bo")
-    ax.plot(goal._x, goal._y, "ro")
+    ax.plot(start.x, start.y, "bo")
+    ax.plot(goal.x, goal.y, "ro")
 
     # plot path
-    path_x = [n._x for n in dijkstra.path]
-    path_y = [n._y for n in dijkstra.path]
+    path_x = [n.x for n in dijkstra.path]
+    path_y = [n.y for n in dijkstra.path]
     ax.plot(path_x, path_y, "r-")
 
     grid.plot_obstacles(ax, Colors.red)
@@ -183,12 +183,12 @@ def problem_3() -> None:
     ax.set_ylim(grid.min_y - grid.grid_spacing, grid.max_y + grid.grid_spacing)
 
     # plot start and goal
-    ax.plot(start._x, start._y, "bo")
-    ax.plot(goal._x, goal._y, "ro")
+    ax.plot(start.x, start.y, "bo")
+    ax.plot(goal.x, goal.y, "ro")
 
     # plot path
-    path_x = [n._x for n in dijkstra.path]
-    path_y = [n._y for n in dijkstra.path]
+    path_x = [n.x for n in dijkstra.path]
+    path_y = [n.y for n in dijkstra.path]
     ax.plot(path_x, path_y, "r-")
 
     grid.plot_obstacles(ax, Colors.red)
@@ -197,6 +197,12 @@ def problem_3() -> None:
     plt.show()
 
 def for_fun() -> None:
+    """
+    The for_fun function generates a random number and size of obstacles and a 
+    random start-goal combinations. It forces the goal to be in the bottom right, and the start
+    to be in the top left. It does this as many times as necessary until it creates
+    a valid map (one that has a path and is of minimum defined distance).
+    """
     # generate a seed
     seed = random.randint(0, sys.maxsize)
     # seed = 3193604484654310071
@@ -251,7 +257,7 @@ def for_fun() -> None:
             if not grid.is_valid_node(goal):
                 continue
 
-            # goal is minimum distance of >= a third the map size
+            # goal is minimum distance of >= some proportion of the map size
             if goal.distance(start) < Node(0, 0).distance(Node(grid.max_x, grid.max_y)) / 1.5:
                 continue
 
@@ -264,7 +270,8 @@ def for_fun() -> None:
             dijkstra.find_path()
             break
         except KeyError:
-            # the goal was never found, re-generate start and goal
+            # the goal was never found, re-generate start, goal, and obstacles
+            logging.info("No path found, re-generating obstacles, start, and goal")
             continue
 
     # PLOT
@@ -274,7 +281,7 @@ def for_fun() -> None:
         f"do_diagnoals={dijkstra.do_diagonals}, " \
         f"grid_spacing={grid.grid_spacing:.2f}m,\n" \
         f"bot_radius={bot_radius:.2f}m, " \
-        f"ellapsed_time={dijkstra._timings['find_path']._total:.2f} sec." \
+        f"ellapsed_time={dijkstra.timings['find_path'].total:.2f} sec." \
     )
     ax.set_ylabel("Y (m)")
     ax.set_xlabel("X (m)")
@@ -283,8 +290,8 @@ def for_fun() -> None:
     ax.set_ylim(grid.min_y - grid.grid_spacing, grid.max_y + grid.grid_spacing)
 
     # plot start and goal
-    ax.plot(start._x, start._y, "o", color=Colors.green)
-    ax.plot(goal._x, goal._y, "o", color=Colors.white)
+    ax.plot(start.x, start.y, "o", color=Colors.green)
+    ax.plot(goal.x, goal.y, "o", color=Colors.white)
 
     grid.plot_obstacles(ax, Colors.red)
     dijkstra.plot_visited_nodes(ax, color=Colors.light_grey)

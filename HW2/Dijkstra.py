@@ -12,16 +12,23 @@ class Dijkstra:
         self.goal = goal
         self.do_diagonals = do_diagonals
 
-        self.current_node: Node = start
-        self.unvisited_nodes: dict[int, Node] = {
-            self.current_node._id: self.current_node
+        self._current_node: Node = start
+        self._unvisited_nodes: dict[int, Node] = {
+            self._current_node._id: self._current_node
         }
-        self.visited_nodes: dict[int, Node] = {}
-        self.path: list[Node] = []
-
+        self._visited_nodes: dict[int, Node] = {}
+        self._path: list[Node] = []
         self._timings = {
             "find_path": Stopwatch(),
         }
+
+    @property
+    def path(self) -> list[Node]:
+        return self._path
+
+    @property
+    def timings(self) -> dict[str, Stopwatch]:
+        return self._timings
 
     ############################################################################
 
@@ -54,28 +61,28 @@ class Dijkstra:
 
             # define the new neighbor based on the valid move
             neighbor: Node = Node(
-                x=self.current_node._x + move[0],
-                y=self.current_node._y + move[1],
-                parent=self.current_node
+                x=self._current_node.x + move[0],
+                y=self._current_node.y + move[1],
+                parent=self._current_node
             )
             
             # check if neighbor's position is valid
             if not self.grid.is_valid_node(neighbor):
                 continue
 
-            neighbor.cost = self.current_node.cost + neighbor.distance(self.current_node)
+            neighbor.cost = self._current_node.cost + neighbor.distance(self._current_node)
 
             # if we've noted this neighbor already as being unvisted, update cost and parent as needed
-            if neighbor._id in self.unvisited_nodes:
-                if neighbor.cost < self.unvisited_nodes[neighbor._id].cost:
-                    self.unvisited_nodes[neighbor._id].cost = neighbor.cost
-                    self.unvisited_nodes[neighbor._id].parent = self.current_node
+            if neighbor._id in self._unvisited_nodes:
+                if neighbor.cost < self._unvisited_nodes[neighbor._id].cost:
+                    self._unvisited_nodes[neighbor._id].cost = neighbor.cost
+                    self._unvisited_nodes[neighbor._id].parent = self._current_node
 
                 logging.info(f":Neighbors:Node:Visited Neighbor: {neighbor}")
 
             # otherwise add to unvisited
-            elif neighbor._id not in self.visited_nodes:
-                self.unvisited_nodes[neighbor._id] = neighbor
+            elif neighbor._id not in self._visited_nodes:
+                self._unvisited_nodes[neighbor._id] = neighbor
 
                 logging.info(f":Neighbors:Node:Unvisted Neighbor: {neighbor}")
 
@@ -94,33 +101,33 @@ class Dijkstra:
         self._timings["find_path"].start()
 
         # while there exists unvisted nodes
-        while self.unvisited_nodes.keys():
+        while self._unvisited_nodes.keys():
             # visit current node
-            self.visited_nodes[self.current_node._id] = self.current_node
+            self._visited_nodes[self._current_node._id] = self._current_node
 
             # get lowest cost unvisited node
-            self.current_node = min(self.unvisited_nodes.values(), key=lambda x: x.cost)
+            self._current_node = min(self._unvisited_nodes.values(), key=lambda x: x.cost)
 
             # remove old node from unvisited nodes
-            del self.unvisited_nodes[self.current_node._id]
+            del self._unvisited_nodes[self._current_node._id]
 
             # add neighbors of current node to unvisited nodes, updating costs and parent as necessary
             self.add_neighbors_to_unvisited_nodes()
-        self.visited_nodes[self.current_node._id] = self.current_node
+        self._visited_nodes[self._current_node._id] = self._current_node
 
         self._timings["find_path"].stop()
-        logging.info(f"Visited all Nodes in {self._timings['find_path']._total:.3f} seconds")
+        logging.info(f"Visited all Nodes in {self._timings['find_path'].total:.3f} seconds")
         logging.info("All Nodes visited...")
 
         # backtrack to find path starting at the goal node
-        self.path = [
-            self.visited_nodes[self.goal._id]
+        self._path = [
+            self._visited_nodes[self.goal._id]
         ]
-        while self.path[-1].parent:
-            self.path.append(self.visited_nodes[self.path[-1].parent._id])
+        while self._path[-1].parent:
+            self._path.append(self._visited_nodes[self._path[-1].parent._id])
 
         logging.info("Path found...")
-        logging.info(f":Path: {', '.join([str(node) for node in self.path])}")
+        logging.info(f":Path: {', '.join([str(node) for node in self._path])}")
             
     ############################################################################
 
@@ -130,10 +137,10 @@ class Dijkstra:
         :param: ax: matplotlib axes to plot on
         :param: color: color to plot the nodes
         """
-        for node in self.visited_nodes.values():
+        for node in self._visited_nodes.values():
             ax.text(
-                node._x, 
-                node._y, 
+                node.x, 
+                node.y, 
                 f"{node.cost:.1f}", 
                 ha="center", 
                 va="center",

@@ -1,3 +1,6 @@
+# let it be known the log parser used in this class is not very dynamic and 
+# depends completley on the logging done in Dijkstra.py
+
 import logging
 from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
@@ -53,9 +56,21 @@ class Plot:
         # INFO:root::Path:
         # INFO:root::Node:In obstacle: (4.00000, 0.00000)
         # INFO:root::Neighbors:Node:Visited Neighbor: (5.50000, 0.50000)
+
+        # find the final attempt in the log...
+        # we may have multiple attempts in the log because we sometimes re-generate
+        # maps if a map is not solveable
+        final_attempt_index = len(lines)
+        i = final_attempt_index - 1
+        while i >= 0:
+            line = lines[i]
+            if "Visiting all Nodes..." in line:
+                final_attempt_index = i
+                break
+            i -= 1
         
         # parse the logger lines
-        for line in lines:
+        for line in lines[final_attempt_index:]:
             # the line that holds the list of node coords
             if ":Path:" in line:
                 path_frames: list[tuple] = eval(f"[{line.split(':Path:')[1]}]")

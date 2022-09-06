@@ -6,9 +6,17 @@ class Stopwatch:
         self._end: float = 0
         self._total: float = 0
 
+    @property
+    def total(self):
+        return self._total
+
+    ############################################################################
+
     def start(self):
         self._start = time.time()
 
     def stop(self):
         self._end = time.time()
         self._total = self._end - self._start
+
+    ############################################################################

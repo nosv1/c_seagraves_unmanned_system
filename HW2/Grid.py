@@ -20,7 +20,7 @@ class Grid:
         self.grid_spacing = grid_spacing
         self.obstacles = obstacles
 
-        self.nodes: dict = self.get_nodes()
+        self._nodes: dict = self.get_nodes()
         
     ############################################################################
 
@@ -35,7 +35,7 @@ class Grid:
                     x=col * self.grid_spacing,
                     y=row * self.grid_spacing,
                 )
-                node.parent_index = self.calculate_node_index(node._x, node._y)
+                node.parent_index = self.calculate_node_index(node.x, node.y)
                 nodes[node._id] = node
         return nodes
 
@@ -88,10 +88,10 @@ class Grid:
         :return: True if in bounds, False otherwise
         """
         return (
-            position._x >= self.min_x and
-            position._x <= self.max_x and
-            position._y >= self.min_y and
-            position._y <= self.max_y
+            position.x >= self.min_x and
+            position.x <= self.max_x and
+            position.y >= self.min_y and
+            position.y <= self.max_y
         )
 
     def is_valid_node(self, position: Node) -> bool:
@@ -116,10 +116,11 @@ class Grid:
         """
         Returns a list of valid nodes
         """
-        return [node for _id, node in self.nodes.items() if self.is_valid_node(node)]
+        return [node for _id, node in self._nodes.items() if self.is_valid_node(node)]
 
     ############################################################################
-
+    # PLOTTING
+    
     def plot_obstacles(self, ax: plt.Axes, color: str) -> None:
         """
         Plots the obstacles in the grid
@@ -128,7 +129,7 @@ class Grid:
         """
         for obstacle in self.obstacles:
             ax.add_artist(plt.Circle(
-                (obstacle._x, obstacle._y),
+                (obstacle.x, obstacle.y),
                 obstacle.radius,
                 color=color,
                 fill=True

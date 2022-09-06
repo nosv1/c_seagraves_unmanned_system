@@ -6,17 +6,24 @@ class Node:
     def __init__(
         self, x: float, y: float, cost: float=0, parent: Node=None
     ):
-        self._x = x
-        self._y = y
-        self._id: str = f"({self._x:.5f}, {self._y:.5f})"
+        self.x = x
+        self.y = y
         self.cost = cost
         self.parent = parent
+
+        self._id: str = self.id
+
+    @property
+    def id(self) -> str:
+        return f"({self.x:.5f}, {self.y:.5f})"
+
+    ############################################################################
 
     def __eq__(self, other: Node) -> bool:
         """
         Checks if two nodes are equal
         """
-        return self._x == other._x and self._y == other._y
+        return self.x == other.x and self.y == other.y
 
     def __str__(self, to_json=False) -> str:
         """
@@ -25,7 +32,9 @@ class Node:
         if to_json:
             return json.dumps(self, indent=4, default=lambda o: o.__dict__)
         else:
-            return f"({self._x:.5f}, {self._y:.5f})"
+            return f"({self.x:.5f}, {self.y:.5f})"
+
+    ############################################################################
 
     def from_json(json_str: str) -> Node:
         """
@@ -44,6 +53,6 @@ class Node:
         """
         Calculates the ecuclidean distance between two nodes
         """
-        return ((self._x - other._x) ** 2 + (self._y - other._y) ** 2) ** 0.5
+        return ((self.x - other.x) ** 2 + (self.y - other.y) ** 2) ** 0.5
         
     ############################################################################
