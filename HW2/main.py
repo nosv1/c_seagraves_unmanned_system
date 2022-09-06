@@ -204,8 +204,8 @@ def for_fun() -> None:
     a valid map (one that has a path and is of minimum defined distance).
     """
     # generate a seed
-    seed = random.randint(0, sys.maxsize)
-    # seed = 3193604484654310071
+    seed = random.randint(0, 99999)  # 5 digit cause I can't be asked to type in more
+    # seed = 80399
     random.seed(seed)
     logging.info(f"Seed: {seed}")
 
@@ -277,7 +277,7 @@ def for_fun() -> None:
     # PLOT
     fig, ax = plt.subplots()
     ax.set_title(
-        f"Dijkstra\n" \
+        f"Dijkstra ({seed})\n" \
         f"do_diagnoals={dijkstra.do_diagonals}, " \
         f"grid_spacing={grid.grid_spacing:.2f}m,\n" \
         f"bot_radius={bot_radius:.2f}m, " \
