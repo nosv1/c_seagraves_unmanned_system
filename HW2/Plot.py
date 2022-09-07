@@ -8,6 +8,7 @@ from matplotlib.animation import FuncAnimation
 
 from Colors import Colors
 from Logger import Logger
+from Node import Node
 
 class Plot:
     def plot_animation(fig: plt.Figure, ax: plt.Axes, save_animation=True) -> None:
@@ -34,6 +35,7 @@ class Plot:
         unvisted_neighbors_plot, = ax.plot([], [], "o", color=Colors.dark_green)
         visited_neighbors_plot, = ax.plot([], [], "o", color=Colors.dark_grey)
         invalid_neighbors_plot, = ax.plot([], [], "o", color=Colors.dark_red)
+        current_nodes_plot = []
 
         # initialize the frames of the animation
         # these are the populated 'plt.Artist' objects,
@@ -46,6 +48,9 @@ class Plot:
         unvisted_neighbors: list[tuple] = []
         visited_neighbors: list[tuple] = []
         invalid_neighbors: list[tuple] = []
+
+        # the order of which we visit nodes and set them as current nodes
+        current_nodes: list[tuple] = []
 
         # we add additional plot frames for the path because we have to set a framerate
         # and interval between frames for the FuncAnimation. This means we can have 
@@ -89,7 +94,7 @@ class Plot:
                         {
                             "unvisted_neighbors": unvisted_neighbors.copy(),
                             "visited_neighbors": visited_neighbors.copy(),
-                            "invalid_neighbors": invalid_neighbors.copy()
+                            "invalid_neighbors": invalid_neighbors.copy(),
                         }
                     )
                     unvisted_neighbors = []
@@ -107,6 +112,8 @@ class Plot:
                     invalid_neighbors.append(eval(line.split(":In obstacle:")[1]))
                 elif ":Out of bounds:" in line:
                     invalid_neighbors.append(eval(line.split(":Out of bounds:")[1]))
+                elif ":Current Node:" in line:
+                    current_nodes.append(eval(line.split(":Current Node:")[1].strip()))
 
         # combine the neighbors and path frames
         frames = neighbor_frames + path_frames
@@ -133,6 +140,19 @@ class Plot:
                     [n[0] for n in neighbor_frames[frame_number]["invalid_neighbors"]],
                     [n[1] for n in neighbor_frames[frame_number]["invalid_neighbors"]]
                 )
+                # plot the cost of the current node
+                current_nodes_plot.append(
+                    ax.text(
+                        current_nodes[frame_number].x,
+                        current_nodes[frame_number].y,
+                        f"{current_nodes[frame_number].cost:.1f}",
+                        ha="center",
+                        va="center",
+                        color=Colors.light_grey,
+                        fontsize=6
+                    )
+                )
+
                 # we clear the plots we aren't showing in a given frame
                 path_line.set_data([], [])
 
@@ -146,7 +166,13 @@ class Plot:
                     [n[1] for n in path_frames[:frame_number-len(neighbor_frames)]]
                 )
 
-            return unvisted_neighbors_plot, visited_neighbors_plot, invalid_neighbors_plot, path_line,
+            return (
+                unvisted_neighbors_plot, 
+                visited_neighbors_plot, 
+                invalid_neighbors_plot,
+                *current_nodes_plot,
+                path_line,
+            )
 
         # designing the plot
         fig.patch.set_facecolor(Colors.grey)
@@ -159,15 +185,22 @@ class Plot:
 
         # setting the legend
         legend_elements = [
-            Line2D([0], [0], marker='o', color=Colors.red, label='Obstacles', markerfacecolor=Colors.red, markersize=10),
-            Line2D([0], [0], marker='o', color=Colors.green, label='Start', markerfacecolor=Colors.green, markersize=10),
-            Line2D([0], [0], marker='o', color=Colors.white, label='Goal', markerfacecolor=Colors.white, markersize=10),
+            Line2D([0], [0], marker='o', color=Colors.dark_grey, label='Obstacles', markerfacecolor=Colors.red, markersize=10),
+            Line2D([0], [0], marker='o', color=Colors.dark_grey, label='Start', markerfacecolor=Colors.green, markersize=10),
+            Line2D([0], [0], marker='o', color=Colors.dark_grey, label='Goal', markerfacecolor=Colors.white, markersize=10),
             Line2D([0], [0], color=Colors.light_blue, lw=4, label='Path'),
-            Line2D([0], [0], marker='o', color=Colors.dark_green, label='Unvisted Neighbors', markerfacecolor=Colors.dark_green, markersize=10),
+            Line2D([0], [0], marker='o', color=Colors.dark_grey, label='Unvisted Neighbors', markerfacecolor=Colors.dark_green, markersize=10),
             Line2D([0], [0], marker='o', color=Colors.dark_grey, label='Visited Neighbors', markerfacecolor=Colors.dark_grey, markersize=10),
-            Line2D([0], [0], marker='o', color=Colors.dark_red, label='Invalid Neighbors', markerfacecolor=Colors.dark_red, markersize=10),
+            Line2D([0], [0], marker='o', color=Colors.dark_grey, label='Invalid Neighbors', markerfacecolor=Colors.dark_red, markersize=10),
+            Line2D([0], [0], marker='o', color=Colors.dark_grey, label='Current Node', markerfacecolor=Colors.dark_blue, markersize=10),
         ]
-        ax.legend(handles=legend_elements)
+        ax.legend(
+            ncol=1,
+            fancybox=True,
+            shadow=True,
+            handles=legend_elements, 
+            loc='upper right'
+        )
 
         # initalizing the animation
         animation = FuncAnimation(
@@ -178,14 +211,18 @@ class Plot:
             interval=100, blit=True
         )
 
+        ax.set_aspect('equal', adjustable='box')
+        fig.tight_layout()
+        fig.set_size_inches(10, 10)
+
         # show the animiation
-        plt.show()
+        # plt.show()
 
         # save the animation
         if save_animation:
             animation.save(
                 "animation.gif", 
                 writer="Pillow", 
-                fps=30, 
+                fps=10, 
                 progress_callback=lambda i, n: print(f"Saving frame {i} of {n}")
             )

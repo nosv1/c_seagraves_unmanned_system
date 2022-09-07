@@ -3,6 +3,7 @@ from dataclasses import dataclass
 @dataclass
 class Colors:
     black = "#000000"
+    dark_blue = "#0000AA"
     dark_green = "#008000"
     dark_grey = "#A9A9A9"
     dark_red = "#A1323B"

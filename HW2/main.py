@@ -294,7 +294,6 @@ def for_fun() -> None:
     ax.plot(goal.x, goal.y, "o", color=Colors.white)
 
     grid.plot_obstacles(ax, Colors.red)
-    dijkstra.plot_visited_nodes(ax, color=Colors.light_grey)
 
     Plot.plot_animation(fig, ax, save_animation=True)
 

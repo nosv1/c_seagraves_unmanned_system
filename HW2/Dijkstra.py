@@ -13,10 +13,10 @@ class Dijkstra:
         self.do_diagonals = do_diagonals
 
         self._current_node: Node = start
-        self._unvisited_nodes: dict[int, Node] = {
+        self._unvisited_nodes: dict[str, Node] = {
             self._current_node._id: self._current_node
         }
-        self._visited_nodes: dict[int, Node] = {}
+        self._visited_nodes: dict[str, Node] = {}
         self._path: list[Node] = []
         self._timings = {
             "find_path": Stopwatch(),
@@ -107,6 +107,7 @@ class Dijkstra:
 
             # get lowest cost unvisited node
             self._current_node = min(self._unvisited_nodes.values(), key=lambda x: x.cost)
+            logging.info(f":Node:Current Node: Node({self._current_node.x}, {self._current_node.y}, {self._current_node.cost})")
 
             # remove old node from unvisited nodes
             del self._unvisited_nodes[self._current_node._id]
