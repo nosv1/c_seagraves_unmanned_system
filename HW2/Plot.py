@@ -26,7 +26,7 @@ class Plot:
             lines = f.readlines()
 
         # restart logger
-        Logger.start_logging(filemode="a")
+        Logger.start_logging()
         logging.info("Unpaused")
 
         # initialize the lines and objects we're going to plot
@@ -50,7 +50,7 @@ class Plot:
         # we add additional plot frames for the path because we have to set a framerate
         # and interval between frames for the FuncAnimation. This means we can have 
         # a low interval between frames, speeding through the neighbors, but not the path.    
-        path_frames_per_frame = 3
+        path_frames_per_frame = 2
 
         # example parseable logger lines
         # INFO:root::Path:
@@ -167,15 +167,15 @@ class Plot:
             Line2D([0], [0], marker='o', color=Colors.dark_grey, label='Visited Neighbors', markerfacecolor=Colors.dark_grey, markersize=10),
             Line2D([0], [0], marker='o', color=Colors.dark_red, label='Invalid Neighbors', markerfacecolor=Colors.dark_red, markersize=10),
         ]
-        ax.legend(handles=legend_elements, loc='upper right')
+        ax.legend(handles=legend_elements)
 
         # initalizing the animation
         animation = FuncAnimation(
             fig, 
             update, 
-            frames=len(frames) + 30,
+            frames=len(frames) + 10,
             repeat=True, 
-            interval=30, blit=True
+            interval=100, blit=True
         )
 
         # show the animiation
