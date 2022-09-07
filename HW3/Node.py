@@ -4,11 +4,12 @@ import json
 
 class Node:
     def __init__(
-        self, x: float, y: float, cost: float=0, parent: Node=None
+        self, x: float, y: float, start_to_node_cost: float=0, heuristic_cost: float=0, parent: Node=None
     ):
         self.x = x
         self.y = y
-        self.cost = cost
+        self.start_to_node_cost = start_to_node_cost
+        self.heuristic_cost = heuristic_cost
         self.parent = parent
 
         self._id: str = self.id
@@ -16,6 +17,13 @@ class Node:
     @property
     def id(self) -> str:
         return f"({self.x:.5f}, {self.y:.5f})"
+
+    @property
+    def total_cost(self) -> float:
+        """
+        Returns the total cost of the node
+        """
+        return self.start_to_node_cost + self.heuristic_cost
 
     ############################################################################
 
@@ -44,7 +52,7 @@ class Node:
         return Node(
             x=json_dict["_x"],
             y=json_dict["_y"],
-            cost=json_dict["cost"]
+            start_to_node_cost=json_dict["cost"]
         )
 
     ############################################################################

@@ -50,7 +50,7 @@ class Plot:
         invalid_neighbors: list[tuple] = []
 
         # the order of which we visit nodes and set them as current nodes
-        current_nodes: list[tuple] = []
+        current_nodes: list[Node] = []
 
         # we add additional plot frames for the path because we have to set a framerate
         # and interval between frames for the FuncAnimation. This means we can have 
@@ -141,17 +141,17 @@ class Plot:
                     [n[1] for n in neighbor_frames[frame_number]["invalid_neighbors"]]
                 )
                 # FIXME this makes plotting slow...
-                # current_nodes_plot.append(
-                #     ax.text(
-                #         current_nodes[frame_number].x,
-                #         current_nodes[frame_number].y,
-                #         f"{current_nodes[frame_number].cost:.1f}",
-                #         ha="center",
-                #         va="center",
-                #         color=Colors.light_grey,
-                #         fontsize=6
-                #     )
-                # )
+                current_nodes_plot.append(
+                    ax.text(
+                        current_nodes[frame_number].x,
+                        current_nodes[frame_number].y,
+                        f"{current_nodes[frame_number].total_cost:.1f}",
+                        ha="center",
+                        va="center",
+                        color=Colors.light_grey,
+                        fontsize=6
+                    )
+                )
 
                 # we clear the plots we aren't showing in a given frame
                 path_line.set_data([], [])
@@ -212,7 +212,7 @@ class Plot:
 
         ax.set_aspect('equal', adjustable='box')
         fig.tight_layout()
-        fig.set_size_inches(10, 10)
+        fig.set_size_inches(8, 8)
 
         # show the animiation
         plt.show()

@@ -66,7 +66,7 @@ class Dijkstra:
                 parent=self._current_node
             )
             
-            # check if neighbor's position is valid
+            # check if neighbor's position is invalid
             if not self.grid.is_valid_node(neighbor):
                 continue
 

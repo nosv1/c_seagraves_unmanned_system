@@ -66,20 +66,20 @@ class AStar:
                 parent=self._current_node
             )
             
-            # check if neighbor's position is valid
+            # check if neighbor's position is invalid
             if not self.grid.is_valid_node(neighbor):
                 continue
 
-            neighbor.cost = (
-                self._current_node.cost + 
-                neighbor.distance(self._current_node) +
-                neighbor.distance(self.goal)
+            neighbor.start_to_node_cost = (
+                self._current_node.start_to_node_cost + 
+                neighbor.distance(self._current_node)
             )
+            neighbor.heuristic_cost = neighbor.distance(self.goal)
 
             # if we've noted this neighbor already as being unvisted, update cost and parent as needed
             if neighbor._id in self._unvisited_nodes:
-                if neighbor.cost < self._unvisited_nodes[neighbor._id].cost:
-                    self._unvisited_nodes[neighbor._id].cost = neighbor.cost
+                if neighbor.total_cost < self._unvisited_nodes[neighbor._id].total_cost:
+                    self._unvisited_nodes[neighbor._id].start_to_node_cost = neighbor.start_to_node_cost
                     self._unvisited_nodes[neighbor._id].parent = self._current_node
 
                 logging.info(f":Neighbors:Node:Visited Neighbor: {neighbor}")
@@ -110,8 +110,16 @@ class AStar:
             self._visited_nodes[self._current_node._id] = self._current_node
 
             # get lowest cost unvisited node
-            self._current_node = min(self._unvisited_nodes.values(), key=lambda x: x.cost)
-            logging.info(f":Node:Current Node: Node({self._current_node.x}, {self._current_node.y}, {self._current_node.cost})")
+            self._current_node = min(self._unvisited_nodes.values(), key=lambda x: x.total_cost)
+            logging.info(
+                f":Node:Current Node: " \
+                f"Node("
+                    f"{self._current_node.x}, " \
+                    f"{self._current_node.y}, " \
+                    f"{self._current_node.start_to_node_cost:.1f}, " \
+                    f"{self._current_node.heuristic_cost:.1f} " \
+                f")"
+            )
 
             # remove old node from unvisited nodes
             del self._unvisited_nodes[self._current_node._id]
@@ -146,7 +154,7 @@ class AStar:
             ax.text(
                 node.x, 
                 node.y, 
-                f"{node.cost:.1f}", 
+                f"{node.total_cost:.1f}", 
                 ha="center", 
                 va="center",
                 fontsize=6,

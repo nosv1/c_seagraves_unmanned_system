@@ -20,7 +20,7 @@ def for_fun() -> None:
     """
     # generate a seed
     seed = random.randint(0, 99999)  # 5 digit cause I can't be asked to type in more
-    # seed = 80399
+    # seed = 12345
     random.seed(seed)
     logging.info(f"Seed: {seed}")
 
@@ -43,7 +43,7 @@ def for_fun() -> None:
         try:
             # setting random-ish number and size of obstacles
             grid.obstacles = []
-            for _ in range(25):
+            for _ in range(10):
                 obstacle_radius = random.uniform(0.3, 0.6)
                 grid.obstacles.append(
                     Obstacle(
@@ -81,7 +81,7 @@ def for_fun() -> None:
                 continue
             
             # find a path
-            aStar: AStar = AStar(grid, start, goal, do_diagonals=False)
+            aStar: AStar = AStar(grid, start, goal, do_diagonals=True)
             aStar.find_path()
             break
         except KeyError:
@@ -113,7 +113,7 @@ def for_fun() -> None:
     ax.plot(goal.x, goal.y, "o", color=Colors.white)
 
     grid.plot_obstacles(ax, Colors.red)
-    aStar.plot_visited_nodes(ax, color=Colors.light_grey)
+    # aStar.plot_visited_nodes(ax, color=Colors.light_grey)
 
     Plot.plot_animation(fig, ax, save_animation=True)
 
