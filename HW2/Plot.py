@@ -55,7 +55,7 @@ class Plot:
         # we add additional plot frames for the path because we have to set a framerate
         # and interval between frames for the FuncAnimation. This means we can have 
         # a low interval between frames, speeding through the neighbors, but not the path.    
-        path_frames_per_frame = 2
+        path_frames_per_frame = 1
 
         # example parseable logger lines
         # INFO:root::Path:
@@ -140,7 +140,7 @@ class Plot:
                     [n[0] for n in neighbor_frames[frame_number]["invalid_neighbors"]],
                     [n[1] for n in neighbor_frames[frame_number]["invalid_neighbors"]]
                 )
-                # plot the cost of the current node
+                # FIXME this makes plotting slow...
                 current_nodes_plot.append(
                     ax.text(
                         current_nodes[frame_number].x,
@@ -192,7 +192,6 @@ class Plot:
             Line2D([0], [0], marker='o', color=Colors.dark_grey, label='Unvisted Neighbors', markerfacecolor=Colors.dark_green, markersize=10),
             Line2D([0], [0], marker='o', color=Colors.dark_grey, label='Visited Neighbors', markerfacecolor=Colors.dark_grey, markersize=10),
             Line2D([0], [0], marker='o', color=Colors.dark_grey, label='Invalid Neighbors', markerfacecolor=Colors.dark_red, markersize=10),
-            Line2D([0], [0], marker='o', color=Colors.dark_grey, label='Current Node', markerfacecolor=Colors.dark_blue, markersize=10),
         ]
         ax.legend(
             ncol=1,
@@ -216,7 +215,7 @@ class Plot:
         fig.set_size_inches(10, 10)
 
         # show the animiation
-        # plt.show()
+        plt.show()
 
         # save the animation
         if save_animation:
