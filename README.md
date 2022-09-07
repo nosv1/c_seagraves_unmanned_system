@@ -1,5 +1,5 @@
 # Algorithms
-[Dijkstra](#Dijkstra)
+[Dijkstra](#Dijkstra)  
 [A*](#A*)
 
 ---
