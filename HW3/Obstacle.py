@@ -11,6 +11,6 @@ class Obstacle(Node):
         """
         Checks if an obstacle is colliding with a node
         """
-        return self.distance(node) <= self.radius
+        return self.distance(node) < self.radius
 
     ############################################################################

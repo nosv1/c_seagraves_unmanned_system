@@ -11,6 +11,73 @@ from Node import Node
 from Obstacle import Obstacle
 from Plot import Plot
 
+def problem_2() -> None:
+    def read_obstacles() -> list[Obstacle]:
+        obstacles: list[Obstacle] = []
+        with open("HW3/biggrids.csv", "r") as f:
+            for line in f.readlines():
+                line = line.strip()
+                if line == "":
+                    continue
+                x, y = line.split(",")
+                obstacles.append(
+                    Obstacle(
+                        x=float(x),
+                        y=float(y),
+                        radius=0.5
+                    )
+                )
+        return obstacles
+
+    bot_radius: float = 0.49
+    grid: Grid = Grid(
+        grid_spacing=0.5,
+        min_x=0,
+        max_x=50,
+        min_y=0,
+        max_y=50,
+        obstacles=read_obstacles(),
+    )
+
+    start = Node(x=49, y=0.5)
+    goal = Node(x=0.5, y=49)
+
+    grid.inflate_bounds(bot_radius)
+    # grid.inflate_obstacles(bot_radius)
+
+    a_star: AStar = AStar(
+        grid=grid,
+        start=start,
+        goal=goal,
+    )
+    a_star.find_path()
+
+    # PLOT
+    fig, ax = plt.subplots()
+    ax.set_title(
+        f"A*\n" \
+        f"do_diagnoals={a_star.do_diagonals}, " \
+        f"grid_spacing={grid.grid_spacing:.2f}m,\n" \
+        f"bot_radius={bot_radius:.2f}m, " \
+        f"ellapsed_time={a_star.timings['find_path'].total:.2f} sec." \
+    )
+    ax.set_ylabel("Y (m)")
+    ax.set_xlabel("X (m)")
+    
+    ax.set_xlim(grid.min_x - grid.grid_spacing, grid.max_x + grid.grid_spacing)
+    ax.set_ylim(grid.min_y - grid.grid_spacing, grid.max_y + grid.grid_spacing)
+
+    a_star.plot_visited_nodes(ax, color=Colors.light_grey)
+    grid.plot_obstacles(ax, Colors.red)
+
+    # plot start and goal
+    ax.plot(start.x, start.y, "o", color=Colors.green)
+    ax.plot(goal.x, goal.y, "o", color=Colors.white)
+
+    # plot path
+
+    Plot.plot_animation(fig, ax, animate=False, save_animation=True)
+
 def for_fun() -> None:
     """
     The for_fun function generates a random number and size of obstacles and a 
@@ -121,7 +188,8 @@ def main() -> None:
     Logger.start_logging()
     logging.info("Started")
 
-    for_fun()
+    problem_2()
+    # for_fun()
 
 if __name__ == "__main__":
     main()

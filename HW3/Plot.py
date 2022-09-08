@@ -11,7 +11,7 @@ from Logger import Logger
 from Node import Node
 
 class Plot:
-    def plot_animation(fig: plt.Figure, ax: plt.Axes, save_animation=True) -> None:
+    def plot_animation(fig: plt.Figure, ax: plt.Axes, animate=True, save_animation=True) -> None:
         """
         Plot the animation using the lines in the currently opened logger.
         :param fig: The figure to plot on.
@@ -201,14 +201,30 @@ class Plot:
             loc='upper right'
         )
 
-        # initalizing the animation
-        animation = FuncAnimation(
-            fig, 
-            update, 
-            frames=len(frames) + 10,
-            repeat=True, 
-            interval=100, blit=True
-        )
+        if animate:
+            # initalizing the animation
+            animation = FuncAnimation(
+                fig, 
+                update, 
+                frames=len(frames) + 10,
+                repeat=True, 
+                interval=100, blit=True
+            )
+
+            # save the animation
+            if save_animation:
+                animation.save(
+                    "animation.gif", 
+                    writer="Pillow", 
+                    fps=10, 
+                    progress_callback=lambda i, n: print(f"Saving frame {i} of {n}")
+                )
+
+        else:
+            path_x = [n[0] for n in path_frames]
+            path_y = [n[1] for n in path_frames]
+            ax.plot(path_x, path_y, color=Colors.light_blue, lw=4)
+
 
         ax.set_aspect('equal', adjustable='box')
         fig.tight_layout()
@@ -216,12 +232,3 @@ class Plot:
 
         # show the animiation
         plt.show()
-
-        # save the animation
-        if save_animation:
-            animation.save(
-                "animation.gif", 
-                writer="Pillow", 
-                fps=10, 
-                progress_callback=lambda i, n: print(f"Saving frame {i} of {n}")
-            )
