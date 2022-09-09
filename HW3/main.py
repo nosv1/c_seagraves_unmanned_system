@@ -1,4 +1,5 @@
 import logging
+import json
 import matplotlib.pyplot as plt
 import numpy as np
 import random
@@ -10,24 +11,30 @@ from Logger import Logger
 from Node import Node
 from Obstacle import Obstacle
 from Plot import Plot
+from RRT import RRT
+
+def read_scenario(path: str) -> dict:
+    with open(path, "r") as f:
+        return json.load(f)
+
+def read_obstacles(path: str) -> list[Obstacle]:
+    obstacles: list[Obstacle] = []
+    with open(path, "r") as f:
+        for line in f.readlines():
+            line = line.strip()
+            if line == "":
+                continue
+            x, y = line.split(",")
+            obstacles.append(
+                Obstacle(
+                    x=float(x),
+                    y=float(y),
+                    radius=0.5
+                )
+            )
+    return obstacles
 
 def problem_2() -> None:
-    def read_obstacles() -> list[Obstacle]:
-        obstacles: list[Obstacle] = []
-        with open("HW3/biggrids.csv", "r") as f:
-            for line in f.readlines():
-                line = line.strip()
-                if line == "":
-                    continue
-                x, y = line.split(",")
-                obstacles.append(
-                    Obstacle(
-                        x=float(x),
-                        y=float(y),
-                        radius=0.5
-                    )
-                )
-        return obstacles
 
     bot_radius: float = 0.49
     grid: Grid = Grid(
@@ -36,7 +43,7 @@ def problem_2() -> None:
         max_x=50,
         min_y=0,
         max_y=50,
-        obstacles=read_obstacles(),
+        obstacles=read_obstacles("HW3/obstacles/biggrids.csv"),
     )
 
     start = Node(x=49, y=0.5)
@@ -77,6 +84,55 @@ def problem_2() -> None:
     # plot path
 
     Plot.plot_animation(fig, ax, animate=False, save_animation=True)
+
+def problem_3() -> None:
+    scenario: dict = read_scenario("HW3/scenarios/2.json")
+    grid: Grid = Grid(
+        min_x=scenario["x_bounds"][0],
+        max_x=scenario["x_bounds"][1],
+        min_y=scenario["y_bounds"][0],
+        max_y=scenario["y_bounds"][1],
+        grid_spacing=scenario["grid_spacing"],
+        obstacles=read_obstacles(scenario["obstacles"]),
+    )
+
+    start =  Node(x=scenario["start"][0], y=scenario["start"][1])
+    goal = Node(x=scenario["goal"][0], y=scenario["goal"][1])
+    bot_radius: float = scenario["bot_radius"]
+    step_length: float = scenario["step_length"]
+    
+    grid.inflate_bounds(bot_radius)
+    # grid.inflate_obstacles(bot_radius)
+
+    rrt: RRT = RRT(
+        step_length=scenario["step_length"],
+        start=start, 
+        goal=goal, 
+        grid=grid
+    )
+    rrt.find_path()
+
+    fig, ax = plt.subplots()
+    fig.patch.set_facecolor(Colors.grey)
+    ax.set_facecolor(Colors.grey)
+    ax.title.set_color(Colors.light_grey)
+    ax.xaxis.label.set_color(Colors.light_grey)
+    ax.yaxis.label.set_color(Colors.light_grey)
+    ax.tick_params(axis='x', colors=Colors.light_grey)
+    ax.tick_params(axis='y', colors=Colors.light_grey)
+
+    # plot start and goal
+    ax.plot(start.x, start.y, "o", color=Colors.green)
+    ax.plot(goal.x, goal.y, "o", color=Colors.white)
+    
+    ax.set_xlim(grid.min_x - grid.grid_spacing, grid.max_x + grid.grid_spacing)
+    ax.set_ylim(grid.min_y - grid.grid_spacing, grid.max_y + grid.grid_spacing)
+
+    grid.plot_obstacles(ax, color=Colors.red)
+    rrt.plot_path(ax, Colors.light_blue)
+
+    plt.show()
+
 
 def for_fun() -> None:
     """
@@ -188,7 +244,8 @@ def main() -> None:
     Logger.start_logging()
     logging.info("Started")
 
-    problem_2()
+    # problem_2()
+    problem_3()
     # for_fun()
 
 if __name__ == "__main__":

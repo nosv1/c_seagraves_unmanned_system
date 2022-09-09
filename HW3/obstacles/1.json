@@ -1,0 +1,7 @@
+{
+    "start": [ 2, 2 ],
+    "goal": [ 8, 9 ],
+    "bot_radius": 0.5,
+    "grid_spacing": 0.5,
+    "obstacles": "obstacles/1.csv"
+}

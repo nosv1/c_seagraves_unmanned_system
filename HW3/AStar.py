@@ -67,7 +67,7 @@ class AStar:
             )
             
             # check if neighbor's position is invalid
-            if not self.grid.is_valid_node(neighbor):
+            if neighbor.id in self.grid._invalid_nodes:
                 continue
 
             neighbor.start_to_node_cost = (

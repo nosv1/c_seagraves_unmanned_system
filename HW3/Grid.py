@@ -20,7 +20,8 @@ class Grid:
         self.grid_spacing = grid_spacing
         self.obstacles = obstacles
 
-        self._nodes: dict = self.get_nodes()
+        self._nodes: dict[str, Node] = self.get_nodes()
+        self._invalid_nodes: set[str] = self.get_invalid_nodes()
         
     ############################################################################
 
@@ -112,11 +113,16 @@ class Grid:
 
         return is_valid
 
-    def get_valid_nodes(self) -> list[Node]:
+    def get_invalid_nodes(self) -> set[Node]:
         """
-        Returns a list of valid nodes
+        Returns a set of valid nodes
         """
-        return [node for _id, node in self._nodes.items() if self.is_valid_node(node)]
+        return set(
+            node.id 
+            for node 
+            in self._nodes.values() 
+            if not self.is_valid_node(node)
+        )
 
     ############################################################################
     # PLOTTING
