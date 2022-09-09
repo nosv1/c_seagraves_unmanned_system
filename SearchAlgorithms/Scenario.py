@@ -1,6 +1,7 @@
 from __future__ import annotations
 import json
 import matplotlib.pyplot as plt
+import random
 
 from AStar import AStar
 from RRT import RRT
@@ -12,35 +13,76 @@ class Scenario:
     def loader(self, filename) -> Scenario:
         with open(filename) as f:
             data = json.load(f)
+            
+        for key in data:
+            if key == "bot_radius":
+                self.bot_radius = data[key]
 
-        self.bot_radius = float(data["bot_radius"])
-        self.start: Node = Node(
-            x=float(data["start"][0]), y=float(data["start"][1])
-        )
-        self.goal: Node = Node(
-            x=float(data["goal"][0]), y=float(data["goal"][1])
-        )
+            elif key == "grid":
+                self.grid: Grid = Grid(
+                    min_x=data[key]["min_x"],
+                    max_x=data[key]["max_x"],
+                    min_y=data[key]["min_y"],
+                    max_y=data[key]["max_y"],
+                    grid_spacing=data[key]["grid_spacing"],
+                    obstacles=[]
+                )
 
-        self.obstacle_radius = data["obstacle_radius"]
-        self.obstacles = Obstacle.obstacles_from_file(
-            data["obstacles"], self.obstacle_radius
-        )
+            elif key == "obstacles":
+                self.obstacle_radius = data[key]["radius"]
 
-        self.grid: Grid = Grid(
-            min_x=float(data["x_bounds"][0]),
-            max_x=float(data["x_bounds"][1]),
-            min_y=float(data["y_bounds"][0]),
-            max_y=float(data["y_bounds"][1]),
-            grid_spacing=float(data["grid_spacing"]),
-            obstacles=self.obstacles
-        )
+                if "file" in data[key]:
+                    self.obstacles = Obstacle.obstacles_from_file(
+                        filename=data[key]["file"], 
+                        radius=float(self.obstacle_radius)
+                    )
 
-        self.algorithm: RRT | AStar = eval(data["algorithm"]["type"])(
-            start=self.start,
-            goal=self.goal,
-            grid=self.grid,
-            **data["algorithm"]["params"],
-        )
+                else:
+                    self.obstacles = Obstacle.generate_obstacles(
+                        count=data[key]["count"],
+                        radius=self.obstacle_radius,
+                        min_x=self.grid.min_x,
+                        max_x=self.grid.max_x,
+                        min_y=self.grid.min_y,
+                        max_y=self.grid.max_y
+                    )
+                    for obstacle in list(self.obstacles.values()):
+                        del self.obstacles[obstacle.id]
+                        obstacle: Node = self.grid.snap_node_to_grid(obstacle)
+                        self.obstacles[obstacle.id] = obstacle
+
+                self.grid.obstacles = self.obstacles
+                self.grid.inflate_obstacles(self.bot_radius)
+                self.grid.inflate_bounds(self.bot_radius)
+                self.grid.set_nodes()
+
+            elif key == "start":
+                if data[key] == "random":
+                    self.start = self.grid.generate_valid_node()
+
+                else:
+                    self.start: Node = Node(
+                        x=float(data[key]["x"]),
+                        y=float(data[key]["y"])
+                    )
+
+            elif key == "goal":
+                if data[key] == "random":
+                    self.goal = self.grid.generate_valid_node()
+
+                else:
+                    self.goal: Node = Node(
+                        x=float(data[key]["x"]),
+                        y=float(data[key]["y"])
+                    )
+
+            elif key == "algorithm":
+                self.algorithm: RRT | AStar = eval(data[key]["type"])(
+                    start=self.start,
+                    goal=self.goal,
+                    grid=self.grid,
+                    **data["algorithm"]["params"],
+                )
 
         return self
 

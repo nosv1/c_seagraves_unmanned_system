@@ -1,5 +1,6 @@
 from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
+import random
 
 from Colors import Colors
 from AStar import AStar
@@ -9,8 +10,10 @@ from Scenario import Scenario
 def main() -> None:
     scenario: Scenario = Scenario().loader(
         # "scenarios/10x10_bot-0o5_grid-0o5.json"
-        "scenarios/AStar50x50_bot-0o5_grid-0o5.json"
-        "scenarios/RRT50x50_bot-0o5_grid-0o5.json"
+        # "scenarios/AStar50x50_bot-0o5_grid-0o5.json"
+        # "scenarios/RRT50x50_bot-0o5_grid-0o5.json"
+        # "scenarios/RRT_10x10_bot-0o5_grid-0o5_random.json"
+        "scenarios/AStar_10x10_bot-0o5_grid-0o5_random.json"
     )
 
     # scenario.grid.inflate_obstacles(scenario.bot_radius)
@@ -57,7 +60,7 @@ def main() -> None:
     print("Plotting obstacles...")
     scenario.grid.plot_obstacles(ax, color=Colors.red)
     print("Plotting nodes...")
-    scenario.grid.plot_nodes(ax, invalid_nodes=True, valid_nodes=False)
+    scenario.grid.plot_nodes(ax, invalid_nodes=True, valid_nodes=True)
 
     print("Plotting open set...")
     scenario.algorithm.plot_open_set(ax, color=Colors.light_purple)

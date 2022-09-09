@@ -1,12 +1,24 @@
 {
-    "start": [ 49, 0.5 ],
-    "goal": [ 0.5, 49 ],
-    "x_bounds": [ 0, 50 ],
-    "y_bounds": [ 0, 50 ],
-    "bot_radius": 0.49,
-    "grid_spacing": 0.5,
-    "obstacle_radius": 0.0,
-    "obstacles": "obstacle_lists/2996x.csv",
+    "bot_radius": 0.5,
+    "grid": {
+        "min_x": 0,
+        "max_x": 50,
+        "min_y": 0,
+        "max_y": 50,
+        "grid_spacing": 0.5
+    },
+    "start": {
+        "x": 49,
+        "y": 0.5
+    },
+    "goal": {
+        "x": 0.5,
+        "y": 49
+    },
+    "obstacles": {
+        "file": "obstacle_lists/2996x.csv",
+        "radius": 0.0
+    },
     "algorithm": {
         "type": "AStar",
         "params": {

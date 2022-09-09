@@ -1,5 +1,6 @@
 from __future__ import annotations
 import matplotlib.pyplot as plt
+import random
 
 from Colors import Colors
 from Node import Node
@@ -131,6 +132,21 @@ class Grid:
         node.x = round(node.x / self.grid_spacing) * self.grid_spacing
         node.y = round(node.y / self.grid_spacing) * self.grid_spacing
         return node
+
+    def generate_valid_node(self) -> Node:
+        """
+        Generates a node in bounds
+        """
+        while True:
+            self.start: Node = Node(
+                x=random.uniform(self.min_x, self.max_x),
+                y=random.uniform(self.min_y, self.max_y)
+            )
+            snapped_node: Node = self.snap_node_to_grid(
+                Node(self.start.x, self.start.y)
+            )
+            if self.node_is_valid(snapped_node):
+                return snapped_node
 
     def plot_obstacles(self, ax: plt.Axes, color: str):
         """

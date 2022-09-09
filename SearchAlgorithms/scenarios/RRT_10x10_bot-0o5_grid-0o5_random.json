@@ -2,23 +2,17 @@
     "bot_radius": 0.5,
     "grid": {
         "min_x": 0,
-        "max_x": 50,
+        "max_x": 10,
         "min_y": 0,
-        "max_y": 50,
+        "max_y": 10,
         "grid_spacing": 0.5
     },
-    "start": {
-        "x": 49,
-        "y": 0.5
-    },
-    "goal": {
-        "x": 0.5,
-        "y": 49
-    },
     "obstacles": {
-        "file": "obstacle_lists/2996x.csv",
-        "radius": 0.0
+        "radius": "random(0.01, .99)",
+        "count": 15
     },
+    "start": "random",
+    "goal": "random",
     "algorithm": {
         "type": "RRT",
         "params": {

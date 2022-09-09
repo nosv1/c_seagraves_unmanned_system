@@ -1,5 +1,7 @@
 from __future__ import annotations
 import numpy as np
+import random
+import re
 
 from Node import Node
 
@@ -23,6 +25,35 @@ class Obstacle(Node):
                 obstacles[obstacle.id] = obstacle
         return obstacles
 
+    def generate_obstacles(
+        count: int, 
+        radius: float | str, 
+        min_x: float, 
+        max_x: float, 
+        min_y: float, 
+        max_y: float
+    ) -> dict[str, Obstacle]:
+        obstacles: dict[str, Obstacle] = {}
+        randomize = type(radius) == str and re.match(r"random\(.*,.*\)", radius)
+        randomize_range = tuple((
+                            float(n) 
+                            for n 
+                            in radius.split("(")[1].split(")")[0].split(",")
+                        ))
+
+        for i in range(count):
+            if randomize:
+                radius = random.uniform(*randomize_range)
+                
+            obstacle: Obstacle = Obstacle(
+                x=random.uniform(min_x, max_x),
+                y=random.uniform(min_y, max_y),
+                radius=radius
+            )
+            obstacles[obstacle.id] = obstacle
+
+        return obstacles
+
     def inflate(self, inflation_amount):
         """
         Inflates the obstacle
@@ -39,11 +70,16 @@ class Obstacle(Node):
         :param spacing: spacing
         :return: None
         """
+        self.radius = round(self.radius / spacing) * spacing
         for x in np.arange(
-            self.x - self.radius, self.x + self.radius + spacing, spacing
+            self.x - self.radius,
+            self.x + self.radius + spacing,
+            spacing
         ):
             for y in np.arange(
-                self.y - self.radius, self.y + self.radius + spacing, spacing
+                self.y - self.radius,
+                self.y + self.radius + spacing,
+                spacing
             ):
                 node: Node = Node(x, y, parent=self)
                 if self.is_point_inside_obstacle(node):
