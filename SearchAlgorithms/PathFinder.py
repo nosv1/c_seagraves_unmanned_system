@@ -31,7 +31,8 @@ class PathFinder:
         ax.plot(
             [node.x for node in self._path],
             [node.y for node in self._path],
-            color=color
+            color=color,
+            linewidth=3
         )
 
     def plot_open_set(self, ax: plt.Axes, color: str) -> None:

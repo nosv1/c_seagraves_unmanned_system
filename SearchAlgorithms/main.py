@@ -9,7 +9,8 @@ from Scenario import Scenario
 def main() -> None:
     scenario: Scenario = Scenario().loader(
         # "scenarios/10x10_bot-0o5_grid-0o5.json"
-        "scenarios/50x50_bot-0o5_grid-0o5.json"
+        "scenarios/AStar50x50_bot-0o5_grid-0o5.json"
+        "scenarios/RRT50x50_bot-0o5_grid-0o5.json"
     )
 
     # scenario.grid.inflate_obstacles(scenario.bot_radius)
