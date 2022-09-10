@@ -9,7 +9,7 @@
     },
     "obstacles": {
         "radius": "random(0.01, .99)",
-        "count": 15
+        "count": 20
     },
     "start": "random",
     "goal": "random",

@@ -1,4 +1,5 @@
 from __future__ import annotations
+import math
 import numpy as np
 import random
 import re
@@ -70,7 +71,7 @@ class Obstacle(Node):
         :param spacing: spacing
         :return: None
         """
-        self.radius = round(self.radius / spacing) * spacing
+        self.radius = math.floor(self.radius / spacing) * spacing
         for x in np.arange(
             self.x - self.radius,
             self.x + self.radius + spacing,

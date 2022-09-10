@@ -20,9 +20,8 @@
         "radius": 0.0
     },
     "algorithm": {
-        "type": "RRT",
+        "type": "AStar",
         "params": {
-            "step_length": 0.5
         }
     }
 }

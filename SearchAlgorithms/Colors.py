@@ -14,5 +14,6 @@ class Colors:
     light_green = "#B5CEA8"
     light_grey = "#ABB2BF"
     light_purple = "#C678DD"
+    orange = "#E5C07B"
     red = "#E06C75"
     white = "#FFFFFF"

@@ -1,8 +1,7 @@
 from __future__ import annotations
-import matplotlib.pyplot as plt
+import numpy as np
 import random
 
-from Colors import Colors
 from Node import Node
 from Obstacle import Obstacle
 
@@ -50,10 +49,10 @@ class Grid:
 
         :param inflation_amount: amount to inflate the bounds by
         """
-        self.min_x -= inflation_amount
-        self.max_x += inflation_amount
-        self.min_y -= inflation_amount
-        self.max_y += inflation_amount
+        self.min_x += inflation_amount
+        self.max_x -= inflation_amount
+        self.min_y += inflation_amount
+        self.max_y -= inflation_amount
 
     def node_in_bounds(self, node: Node) -> bool:
         """
@@ -109,17 +108,19 @@ class Grid:
             for _id, invalid_node in obstacle._bounding_box.items():
                 self._invalid_nodes[_id] = invalid_node
 
-        for row in range(int(self.max_x / self.grid_spacing + 1)):
-            for col in range(int(self.max_y / self.grid_spacing + 1)):
+        # looping in bound nodes
+        for row in np.arange(
+            self.min_x, self.max_x + self.grid_spacing, self.grid_spacing
+        ):
+            for col in np.arange(
+                self.min_y, self.max_y + self.grid_spacing, self.grid_spacing
+            ):
                 node = Node(
-                    x=col * self.grid_spacing,
-                    y=row * self.grid_spacing,
+                    x=row,
+                    y=col
                 )
 
-                if not self.node_in_bounds(node):
-                    self._invalid_nodes[node.id] = node
-
-                elif node.id not in self._invalid_nodes:
+                if node.id not in self._invalid_nodes:
                     self._valid_nodes[node.id] = node
 
     def snap_node_to_grid(self, node: Node) -> Node:
@@ -147,38 +148,3 @@ class Grid:
             )
             if self.node_is_valid(snapped_node):
                 return snapped_node
-
-    def plot_obstacles(self, ax: plt.Axes, color: str):
-        """
-        Plots the obstacles in the grid
-
-        :param ax: axis to plot on
-        """
-        for _id, obstacle in self.obstacles.items():
-            ax.add_artist(plt.Circle(
-                (obstacle.x, obstacle.y),
-                obstacle.radius,
-                color=color,
-            ))
-
-    def plot_nodes(self, ax: plt.Axes, invalid_nodes=True, valid_nodes=True):
-        """
-        Plots the nodes in the grid
-
-        :param ax: axis to plot on
-        """
-        if invalid_nodes:
-            for node in self._invalid_nodes.values():
-                ax.plot(
-                    node.x, node.y, 
-                    color=(
-                        Colors.dark_red 
-                        if self.node_in_obstacle(node) 
-                        else Colors.light_grey
-                    ), 
-                    marker="."
-                )
-
-        if valid_nodes:
-            for node in self._valid_nodes.values():
-                ax.plot(node.x, node.y, color=Colors.light_grey, marker=".")

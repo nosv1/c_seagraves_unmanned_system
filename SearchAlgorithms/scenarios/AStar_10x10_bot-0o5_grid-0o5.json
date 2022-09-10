@@ -2,22 +2,22 @@
     "bot_radius": 0.5,
     "grid": {
         "min_x": 0,
-        "max_x": 50,
+        "max_x": 10,
         "min_y": 0,
-        "max_y": 50,
+        "max_y": 10,
         "grid_spacing": 0.5
     },
     "start": {
-        "x": 49,
-        "y": 0.5
+        "x": 2,
+        "y": 2
     },
     "goal": {
-        "x": 0.5,
-        "y": 49
+        "x": 8,
+        "y": 9
     },
     "obstacles": {
-        "file": "obstacle_lists/2996x.csv",
-        "radius": 0.0
+        "file": "obstacle_lists/10x.csv",
+        "radius": 0.5
     },
     "algorithm": {
         "type": "AStar",

@@ -1,9 +1,9 @@
 from __future__ import annotations
 import json
 import matplotlib.pyplot as plt
-import random
 
 from AStar import AStar
+from Colors import Colors
 from RRT import RRT
 from Grid import Grid
 from Node import Node
@@ -87,5 +87,73 @@ class Scenario:
         return self
 
     def plot_start_and_goal(self, ax) -> None:
-        ax.plot(self.start.x, self.start.y, "go")
-        ax.plot(self.goal.x, self.goal.y, "ro")
+        ax.plot(self.start.x, self.start.y, "go", markersize=8)
+        ax.plot(self.goal.x, self.goal.y, "ro", markersize=8)
+
+    def plot_obstacles(self, ax: plt.Axes, color: str):
+        """
+        Plots the obstacles in the grid
+
+        :param ax: axis to plot on
+        """
+        for _id, obstacle in self.obstacles.items():
+            ax.add_artist(plt.Circle(
+                (obstacle.x, obstacle.y),
+                obstacle.radius,
+                color=color,
+            ))
+
+    def plot_nodes(self, ax: plt.Axes, invalid_nodes=True, valid_nodes=True):
+        """
+        Plots the nodes in the grid
+
+        :param ax: axis to plot on
+        """
+        if invalid_nodes:
+            for node in self.grid._invalid_nodes.values():
+                ax.plot(
+                    node.x, node.y, 
+                    color=(
+                        Colors.dark_red 
+                        if self.grid.node_in_obstacle(node) 
+                        else Colors.light_grey
+                    ), 
+                    marker="."
+                )
+
+        if valid_nodes:
+            for node in self.grid._valid_nodes.values():
+                ax.plot(node.x, node.y, color=Colors.light_grey, marker=".")
+
+    def plot_path(self, ax: plt.Axes, color: str) -> None:
+        """
+        Plots the path on the given axes
+        """
+        ax.plot(
+            [node.x for node in self.algorithm._path],
+            [node.y for node in self.algorithm._path],
+            color=color,
+            linewidth=3
+        )
+
+    def plot_open_set(self, ax: plt.Axes, color: str) -> None:
+        """
+        Plots the open set on the given axes
+        """
+        for node in self.algorithm._open_set.values():
+            ax.text(
+                node.x, node.y, f"{node.total_cost:.1f}", 
+                color=color, ha="center", va="center",
+                fontsize=6
+            )
+
+    def plot_closed_set(self, ax: plt.Axes, color: str) -> None:
+        """
+        Plots the closed set on the given axes
+        """
+        for node in self.algorithm._closed_set.values():
+            ax.text(
+                node.x, node.y, f"{node.total_cost:.1f}", 
+                color=color, ha="center", va="center",
+                fontsize=6
+            )
