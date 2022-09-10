@@ -65,13 +65,13 @@ class RRT(PathFinder):
                 random_node: Node = self.generate_random_node()
                 closest_node: Node = self.find_closest_node(random_node)
                 self._current_node = self.step_towards_node(closest_node, random_node)
-                snapped_node: Node = self.grid.snap_node_to_grid(
-                    Node(self._current_node.x, self._current_node.y)
-                )
-                # if self.is_valid_step(
-                #     closest_node, self._current_node, self.step_length / 5
-                # ):
-                if self.grid.node_is_valid(snapped_node):
+                # snapped_node: Node = self.grid.snap_node_to_grid(
+                #     Node(self._current_node.x, self._current_node.y)
+                # )
+                if self.is_valid_step(
+                    closest_node, self._current_node, self.step_length / 5
+                ):
+                # if self.grid.node_is_valid(snapped_node):
                     self._open_set[self._current_node.id] = self._current_node
                     # ax.plot(
                     #     random_node.x, 
