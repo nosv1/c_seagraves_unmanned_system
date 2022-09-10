@@ -49,10 +49,10 @@ class Grid:
 
         :param inflation_amount: amount to inflate the bounds by
         """
-        self.min_x += inflation_amount
-        self.max_x -= inflation_amount
-        self.min_y += inflation_amount
-        self.max_y -= inflation_amount
+        self.min_x += self.grid_spacing * round(inflation_amount / self.grid_spacing)
+        self.max_x -= self.grid_spacing * round(inflation_amount / self.grid_spacing)
+        self.min_y += self.grid_spacing * round(inflation_amount / self.grid_spacing)
+        self.max_y -= self.grid_spacing * round(inflation_amount / self.grid_spacing)
 
     def node_in_bounds(self, node: Node) -> bool:
         """
@@ -138,13 +138,4 @@ class Grid:
         """
         Generates a node in bounds
         """
-        while True:
-            self.start: Node = Node(
-                x=random.uniform(self.min_x, self.max_x),
-                y=random.uniform(self.min_y, self.max_y)
-            )
-            snapped_node: Node = self.snap_node_to_grid(
-                Node(self.start.x, self.start.y)
-            )
-            if self.node_is_valid(snapped_node):
-                return snapped_node
+        return random.choice(list(self._valid_nodes.values()))
