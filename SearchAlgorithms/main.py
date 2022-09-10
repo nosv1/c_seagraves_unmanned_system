@@ -9,9 +9,10 @@ def main() -> None:
         # "scenarios/AStar_10x10_bot-0o5_grid-0o5.json"
         # "scenarios/AStar_10x10_bot-0o5_grid-0o5_random.json"
         # "scenarios/AStar_50x50_bot-0o5_grid-0o5.json"
+        "scenarios/AStar_50x50_bot-0o5_grid-0o5_random.json"
         # "scenarios/RRT_10x10_bot-0o5_grid-0o5.json"
         # "scenarios/RRT_10x10_bot-0o5_grid-0o5_random.json"
-        "scenarios/RRT_50x50_bot-0o5_grid-0o5.json"
+        # "scenarios/RRT_50x50_bot-0o5_grid-0o5.json"
     )
 
     print("Setting up plot...")
@@ -59,8 +60,8 @@ def main() -> None:
         shadow=True,
         loc="upper right"
     )
-    print("Plotting obstacles")
-    scenario.plot_obstacles(ax, Colors.red)
+    # print("Plotting obstacles")
+    # scenario.plot_obstacles(ax, Colors.red)
     print("Plotting nodes...")
     scenario.plot_nodes(ax, invalid_nodes=True, valid_nodes=False)
     print("Plotting start and goal...")
@@ -101,7 +102,7 @@ def main() -> None:
     scenario.plot_path(ax, Colors.light_blue)
 
     print("Showing plot...")
-    plt.pause(100)
+    plt.pause(1000)
 
 if __name__ == "__main__":
     main()

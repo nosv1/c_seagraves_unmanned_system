@@ -40,7 +40,7 @@ class Obstacle(Node):
                             float(n) 
                             for n 
                             in radius.split("(")[1].split(")")[0].split(",")
-                        ))
+                        )) if randomize else None
 
         for i in range(count):
             if randomize:
