@@ -62,7 +62,7 @@ class RRT(PathFinder):
         self._open_set[self.start.id] = self.start
         while self._current_node.distance_to(self.goal) > self.step_length:
             while True:
-                random_node: Node = self.generate_random_node()
+                random_node: Node = self.grid.generate_valid_node()
                 closest_node: Node = self.find_closest_node(random_node)
                 self._current_node = self.step_towards_node(closest_node, random_node)
                 # snapped_node: Node = self.grid.snap_node_to_grid(
