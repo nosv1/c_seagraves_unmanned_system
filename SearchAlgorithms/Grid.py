@@ -133,9 +133,3 @@ class Grid:
         node.x = round(node.x / self.grid_spacing) * self.grid_spacing
         node.y = round(node.y / self.grid_spacing) * self.grid_spacing
         return node
-
-    def generate_valid_node(self) -> Node:
-        """
-        Generates a node in bounds
-        """
-        return random.choice(list(self._valid_nodes.values()))

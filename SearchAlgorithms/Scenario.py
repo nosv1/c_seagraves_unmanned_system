@@ -1,6 +1,7 @@
 from __future__ import annotations
 import json
 import matplotlib.pyplot as plt
+import random
 
 from AStar import AStar
 from Colors import Colors
@@ -58,7 +59,7 @@ class Scenario:
 
             elif key == "start":
                 if data[key] == "random":
-                    self.start = self.grid.generate_valid_node()
+                    self.start = random.choice(list(self.grid._valid_nodes.values()))
 
                 else:
                     self.start: Node = Node(
@@ -68,7 +69,7 @@ class Scenario:
 
             elif key == "goal":
                 if data[key] == "random":
-                    self.goal = self.grid.generate_valid_node()
+                    self.goal = random.choice(list(self.grid._valid_nodes.values()))
 
                 else:
                     self.goal: Node = Node(

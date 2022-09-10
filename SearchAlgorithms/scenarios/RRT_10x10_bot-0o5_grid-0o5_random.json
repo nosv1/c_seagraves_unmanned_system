@@ -16,7 +16,8 @@
     "algorithm": {
         "type": "RRT",
         "params": {
-            "step_length": 0.5
+            "step_length": 0.5,
+            "sub_step_length": 0.1
         }
     }
 }

@@ -7,48 +7,44 @@ from Node import Node
 from PathFinder import PathFinder
 
 class RRT(PathFinder):
-    def __init__(self, step_length: float, *args, **kwargs) -> None:
+    def __init__(self, step_length: float, sub_step_length: float=None, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.step_length = step_length
+        self.sub_step_length = (
+            step_length / 5 
+            if not sub_step_length 
+            else sub_step_length
+        )
 
     def generate_random_node(self) -> Node:
         self._random_node = Node(
             x=random.uniform(
-                self.grid.min_x - self.grid.grid_spacing, 
-                self.grid.max_x + self.grid.grid_spacing
+                self.grid.min_x - self.grid.grid_spacing * 2, 
+                self.grid.max_x + self.grid.grid_spacing * 2
             ),
             y=random.uniform(
-                self.grid.min_y - self.grid.grid_spacing,
-                self.grid.max_y + self.grid.grid_spacing
+                self.grid.min_y - self.grid.grid_spacing * 2,
+                self.grid.max_y + self.grid.grid_spacing * 2
             )
         )
         return self._random_node
 
-    def step_towards_node(self, root: Node, node: Node, step_length=None) -> Node:
-        distance: float = root.distance_to(node)
-        step_length: float = step_length if step_length else self.step_length
-        return Node(
-            x=root.x + self.step_length * (node.x - root.x) / distance,
-            y=root.y + self.step_length * (node.y - root.y) / distance,
-            start_to_node_cost=root.start_to_node_cost + step_length,
-            parent=root
-        )
-
-    def find_closest_node(self, node: Node) -> Node:
-        closest_node: Node = None
-        closest_distance: float = float('inf')
-        for n in self._open_set.values():
-            distance: float = n.distance_to(node)
-            if distance < closest_distance:
-                closest_node = n
-                closest_distance = distance
-        return closest_node
-
-    def is_valid_step(self, start: Node, stop: Node, resoloution: float) -> bool:
+    def step_towards_node(self, root: Node, node: Node, step_length: float) -> Node:
         """
-        Check if points (of resolution) between start and stop are valid.
+        Move step_length towards node from root.
         """
-        for step in np.linspace(0, 1, int(start.distance_to(stop) / resoloution)):
+        node: Node = root.step_towards_node(node, step_length)
+        node.start_to_node_cost = root.start_to_node_cost + step_length
+        node.parent = root
+        return node
+
+    def is_valid_step(
+        self, start: Node, stop: Node, sub_step_length: float
+    ) -> bool:
+        """
+        Check if points of sub-step length between start and stop are valid.
+        """
+        for step in np.linspace(0, 1, int(start.distance_to(stop) / sub_step_length)):
             node: Node = Node(
                 x=start.x + step * (stop.x - start.x),
                 y=start.y + step * (stop.y - start.y)
@@ -59,19 +55,41 @@ class RRT(PathFinder):
         return True
 
     def find_path(self, ax: plt.Axes) -> None:
+        """
+        While current node is not in reach of goal
+            - Generate random node
+            - Find closest discovered node
+            - Step towards random node from closest node
+            - If step and sub-steps are valid
+                * add to open set
+        """
         self._open_set[self.start.id] = self.start
+        # while current node is not in reach of goal
         while self._current_node.distance_to(self.goal) > self.step_length:
             while True:
-                random_node: Node = self.grid.generate_valid_node()
-                closest_node: Node = self.find_closest_node(random_node)
-                self._current_node = self.step_towards_node(closest_node, random_node)
+                # generate random node
+                random_node: Node = self.generate_random_node()
+
+                # find closest discovered node
+                closest_node: Node = random_node.find_closest_node(
+                    self._open_set.values()
+                )
+
+                # step towards random node from closest node
+                self._current_node = self.step_towards_node(
+                    closest_node, random_node, self.step_length
+                )
+
+                # snap node to grid
                 # snapped_node: Node = self.grid.snap_node_to_grid(
-                #     Node(self._current_node.x, self._current_node.y)
+                    # Node(self._current_node.x, self._current_node.y)
                 # )
-                if self.is_valid_step(
-                    closest_node, self._current_node, self.step_length / 5
-                ):
                 # if self.grid.node_is_valid(snapped_node):
+
+                # check if step is valid
+                if self.is_valid_step(
+                    closest_node, self._current_node, self.sub_step_length
+                ):
                     self._open_set[self._current_node.id] = self._current_node
                     # ax.plot(
                     #     random_node.x, 
@@ -88,8 +106,8 @@ class RRT(PathFinder):
                     #     markersize=4
                     # )
                     # ax.plot(
-                    #     snapped_node.x,
-                    #     snapped_node.y,
+                    #     self._current_node.x,
+                    #     self._current_node.y,
                     #     marker="o",
                     #     color=Colors.green,
                     #     markersize=4
@@ -97,12 +115,14 @@ class RRT(PathFinder):
                     # plt.pause(0.001)
                     break
 
+        # update goal's cost and parent
         self.goal.start_to_node_cost = (
             self._current_node.start_to_node_cost + 
             self._current_node.distance_to(self.goal)
         )
         self.goal.parent = self._current_node
 
+        # construct path
         self._path = [self.goal]
         while self._path[-1].parent:
             self._path.append(self._path[-1].parent)

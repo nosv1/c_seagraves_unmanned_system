@@ -32,8 +32,38 @@ class Node:
         """
         return self.x == other.x and self.y == other.y
 
+    def from_id(id_str: str) -> Node:
+        """
+        Creates a node from an id string
+        """
+        x, y = id_str[1:-1].split(", ")
+        return Node(float(x), float(y))
+
     def distance_to(self, other: Node) -> float:
         """
         Calculates the ecuclidean distance between two nodes
         """
         return ((self.x - other.x) ** 2 + (self.y - other.y) ** 2) ** 0.5
+
+    def find_closest_node(self, nodes: list[Node]) -> Node:
+        """
+        Finds the closest node to the current node in a list of nodes.
+        """
+        closest_node: Node = None
+        closest_distance: float = float('inf')
+        for node in nodes:
+            distance: float = self.distance_to(node)
+            if distance < closest_distance:
+                closest_node = node
+                closest_distance = distance
+        return closest_node
+
+    def step_towards_node(self, node: Node, step_length: float) -> Node:
+        """
+        Move step_length towards node from root.
+        """
+        distance: float = self.distance_to(node)
+        return Node(
+            x=self.x + step_length * (node.x - self.x) / distance,
+            y=self.y + step_length * (node.y - self.y) / distance
+        )
