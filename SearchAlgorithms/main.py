@@ -1,10 +1,7 @@
 from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
-import random
 
 from Colors import Colors
-from AStar import AStar
-from RRT import RRT
 from Scenario import Scenario
 
 def main() -> None:
@@ -62,14 +59,20 @@ def main() -> None:
         shadow=True,
         loc="upper right"
     )
-    # print("Plotting obstacles")
-    # scenario.plot_obstacles(ax, Colors.red)
+    print("Plotting obstacles")
+    scenario.plot_obstacles(ax, Colors.red)
     print("Plotting nodes...")
     scenario.plot_nodes(ax, invalid_nodes=True, valid_nodes=False)
     print("Plotting start and goal...")
     scenario.plot_start_and_goal(ax)
 
     while True:
+        if scenario.start.distance_to(scenario.goal) < scenario.grid.max_x / 1.5:
+            print("Start and goal not interesting enough... Regenerating...")
+            plt.close()
+            main()
+            return
+
         try:
             print("Finding path...")
             scenario.algorithm.stopwatch.start()
@@ -77,9 +80,12 @@ def main() -> None:
             scenario.algorithm.stopwatch.stop()
             print(f"Path found... Time: {scenario.algorithm.stopwatch.elapsed_time:.5f}s")
             break
+
         except ValueError:
-            print("No path found...")
+            print("No path found... Regenerating...")
+            plt.close()
             main()
+            return
 
     # set title
     ax.set_title(
