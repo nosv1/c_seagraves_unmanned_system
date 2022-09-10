@@ -13,8 +13,14 @@ class RRT(PathFinder):
 
     def generate_random_node(self) -> Node:
         self._random_node = Node(
-            x=random.uniform(self.grid.min_x, self.grid.max_x),
-            y=random.uniform(self.grid.min_y, self.grid.max_y)
+            x=random.uniform(
+                self.grid.min_x - self.grid.grid_spacing, 
+                self.grid.max_x + self.grid.grid_spacing
+            ),
+            y=random.uniform(
+                self.grid.min_y - self.grid.grid_spacing,
+                self.grid.max_y + self.grid.grid_spacing
+            )
         )
         return self._random_node
 
