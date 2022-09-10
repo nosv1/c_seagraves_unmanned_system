@@ -9,10 +9,10 @@ def main() -> None:
         # "scenarios/AStar_10x10_bot-0o5_grid-0o5.json"
         # "scenarios/AStar_10x10_bot-0o5_grid-0o5_random.json"
         # "scenarios/AStar_50x50_bot-0o5_grid-0o5.json"
-        "scenarios/AStar_50x50_bot-0o5_grid-0o5_random.json"
+        # "scenarios/AStar_50x50_bot-0o5_grid-0o5_random.json"
         # "scenarios/RRT_10x10_bot-0o5_grid-0o5.json"
         # "scenarios/RRT_10x10_bot-0o5_grid-0o5_random.json"
-        # "scenarios/RRT_50x50_bot-0o5_grid-0o5.json"
+        "scenarios/RRT_50x50_bot-0o5_grid-0o5.json"
     )
 
     print("Setting up plot...")

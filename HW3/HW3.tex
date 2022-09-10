@@ -28,7 +28,7 @@
         \section*{Problem 2}
             \begin{minipage}{\linewidth}
                 \raggedright
-                It should be noted, if you loop the obstacle list every iteration, this will take a long time. The solution is to put invalid nodes into a set and check if a given node exists in the set. \break 
+                It should be noted, if you loop the obstacle list every iteration, this will take a long time - O(nodes-visited * num-obstacles). The solution is to put invalid nodes into a set and check if a given node exists in the set - O(nodes-visited). \break 
                 \break
                 ./main.py \break
                 \url{https://github.com/nosv1/seagraves_unmanned_systems/blob/main/SearchAlgorithms/main.py} \break
@@ -43,14 +43,14 @@
         \section*{Problem 3}
             \begin{minipage}{\linewidth}
                 \raggedright
-                It should be noted, there does not exist a solution if you inflate the obstacles greater than the bot radius. For the plot, I didn't inflate the obstacles at all, so an obstacle is the size of one node. \break
+                It should be noted, there does not exist a solution if you inflate the obstacles greater than the bot radius. For the plot, I'm plotting the obstacle node at size 0. \break
                 \break
                 It should also be noted, the algorithim I used for stepping towards a node: \break
                 \break
                 - generate random node \break
                 - step towards node from closest node \break
-                - snap copy of node to grid \break
-                - save stepped node if snapped node is a valid node \break
+                - check if snapped-to-grid sub-steps along step are valid \break
+                - saving node if step is valid \break
                 \break
                 This lets me use steps that aren't in the grid but still try and avoid obstacles. Like, for a more relaxed map - with more space between obstacles - I can inflate an obstacle, define the nodes in the obstacle as invalid, snap to a close node, check if it's invalid, and assume my 'non-snapped' node is valid or invalid.\break
                 \break
