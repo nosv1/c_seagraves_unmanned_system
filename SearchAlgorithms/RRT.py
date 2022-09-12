@@ -7,7 +7,12 @@ from Node import Node
 from PathFinder import PathFinder
 
 class RRT(PathFinder):
-    def __init__(self, step_length: float, sub_step_length: float=None, *args, **kwargs) -> None:
+    def __init__(
+        self, 
+        step_length: float, 
+        sub_step_length: float=None,
+        *args, **kwargs
+    ) -> None:
         super().__init__(*args, **kwargs)
         self.step_length = step_length
         self.sub_step_length = (
@@ -17,14 +22,16 @@ class RRT(PathFinder):
         )
 
     def generate_random_node(self) -> Node:
+        x_range_expansion: float = (self.grid.max_x - self.grid.min_x) / 4
+        y_range_expansion: float = (self.grid.max_y - self.grid.min_y) / 4
         self._random_node = Node(
             x=random.uniform(
-                self.grid.min_x - self.grid.grid_spacing * 2, 
-                self.grid.max_x + self.grid.grid_spacing * 2
+                self.grid.min_x - x_range_expansion,
+                self.grid.max_x + x_range_expansion
             ),
             y=random.uniform(
-                self.grid.min_y - self.grid.grid_spacing * 2,
-                self.grid.max_y + self.grid.grid_spacing * 2
+                self.grid.min_y - y_range_expansion,
+                self.grid.max_y + y_range_expansion
             )
         )
         return self._random_node

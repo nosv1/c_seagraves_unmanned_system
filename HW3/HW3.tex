@@ -35,7 +35,7 @@
                 ./AStar.py \break
                 \url{https://github.com/nosv1/seagraves_unmanned_systems/blob/main/SearchAlgorithms/AStar.py}
                 \begin{center}
-                    \includegraphics[width=\linewidth]{HW3P2 AStar.png}
+                    \includegraphics[height=4.5in]{HW3P2 AStar.png}
                 \end{center}
             \end{minipage}
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
@@ -47,21 +47,23 @@
                 \break
                 It should also be noted, the algorithim I used for stepping towards a node: \break
                 \break
-                - generate random node \break
+                - generate random node\break
                 - step towards node from closest node \break
                 - check if snapped-to-grid sub-steps along step are valid \break
                 - saving node if step is valid \break
                 \break
-                This lets me use steps that aren't in the grid but still try and avoid obstacles. Like, for a more relaxed map - with more space between obstacles - I can inflate an obstacle, define the nodes in the obstacle as invalid, snap to a close node, check if it's invalid, and assume my 'non-snapped' node is valid or invalid.\break
+                This lets me use steps that aren't in the grid but check if nodes are valid quickly. Like, for a more relaxed map - with more space between obstacles - I can inflate an obstacle, define the nodes in the obstacle as invalid, snap to a close node, check if it's invalid, and assume my 'non-snapped' node is valid or invalid.\break
                 \break
-                Something else you can do about these 'non-snapped' nodes, is when you take a step, you can take smaller steps along the line, and see if any of those steps are invalid - so you don't accidently step over a part of an obstacle. \break
+                Something else to consider about taking steps towards nodes and using 'non-snapped' nodes is - assuming your obstacle is equa-distant to its center - take sub-steps along your step to see if any of them are invalid; this helps to avoid stepping over part of an obstacle - even if your close node and new node are both valid. However, checking sub-steps bumps the time from O(nodes-visited) to O(nodes-visited * sub-step-ratio). \break
+
+                RRT is terrible for goals close to the edge... It's just luck if the randomizer generated points beyond the edge to step towards the goal... I wound up expanding my randomizer range to 1.5x the map size to help it.
                 \break
                 ./main.py \break
                 \url{https://github.com/nosv1/seagraves_unmanned_systems/blob/main/SearchAlgorithms/main.py} \break
                 ./RRT.py \break
                 \url{https://github.com/nosv1/seagraves_unmanned_systems/blob/main/SearchAlgorithms/RRT.py}
                 \begin{center}
-                    \includegraphics[width=\linewidth]{HW3P3 RRT.png}
+                    \includegraphics[height=4.5in]{HW3P3 RRT.png}
                 \end{center}
             \end{minipage}
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 

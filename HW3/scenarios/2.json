@@ -1,0 +1,11 @@
+{
+    "start": [ 49, 0.5 ],
+    "goal": [ 0.5, 49 ],
+    "bot_radius": 0.49,
+    "grid_spacing": 0.5,
+    "x_bounds": [ 0, 50 ],
+    "y_bounds": [ 0, 50 ],
+    "step_length": 0.5,
+    "obstacle_radius": 0.5,
+    "obstacles": "HW3/obstacles/biggrids.csv"
+}
