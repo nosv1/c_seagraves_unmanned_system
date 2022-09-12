@@ -16,7 +16,8 @@
         "y": 9
     },
     "obstacles": {
-        "file": "obstacle_lists/10x.csv"
+        "file": "obstacle_lists/10x.csv",
+        "radius": 0.5
     },
     "algorithm": {
         "type": "RRT",
