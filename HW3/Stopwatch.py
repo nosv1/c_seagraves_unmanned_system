@@ -1,22 +1,25 @@
 import time
 
 class Stopwatch:
-    def __init__(self):
-        self._start: float = 0
-        self._end: float = 0
-        self._total: float = 0
-
+    def __init__(self) -> None:
+        self.start_time = None
+        self.end_time = None
+    
     @property
-    def total(self):
-        return self._total
+    def elapsed_time(self) -> float:
+        """
+        Returns the ellapsed time in seconds
+        """
+        return self.end - self.start_time
 
-    ############################################################################
+    def start(self) -> None:
+        """
+        Starts the stopwatch
+        """
+        self.start_time = time.time()
 
-    def start(self):
-        self._start = time.time()
-
-    def stop(self):
-        self._end = time.time()
-        self._total = self._end - self._start
-
-    ############################################################################
+    def stop(self) -> None:
+        """
+        Stops the stopwatch
+        """
+        self.end = time.time()

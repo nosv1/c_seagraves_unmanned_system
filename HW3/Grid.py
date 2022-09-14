@@ -1,17 +1,19 @@
-import logging
-import matplotlib.pyplot as plt
+from __future__ import annotations
+import numpy as np
+import random
 
 from Node import Node
 from Obstacle import Obstacle
 
 class Grid:
-    def __init__(self, 
-        min_x: int,
-        max_x: int,
-        min_y: int,
-        max_y: int, 
-        grid_spacing: float, 
-        obstacles: list[Obstacle]
+    def __init__(
+        self,
+        min_x: float,
+        max_x: float,
+        min_y: float,
+        max_y: float,
+        grid_spacing: float,
+        obstacles: dict[str, Obstacle],
     ) -> None:
         self.min_x = min_x
         self.max_x = max_x
@@ -20,125 +22,114 @@ class Grid:
         self.grid_spacing = grid_spacing
         self.obstacles = obstacles
 
-        self._nodes: dict[str, Node] = self.get_nodes()
-        self._invalid_nodes: set[str] = self.get_invalid_nodes()
-        
-    ############################################################################
+        self._valid_nodes: dict[str, Node] = {}
+        self._invalid_nodes: dict[str, Node] = {}
 
-    def get_nodes(self) -> dict[str, Node]:
+    @property
+    def nodes(self) -> dict[str, Node]:
         """
-        Creates a list of nodes in the grid
-        """
-        nodes: dict[str, Node] = {}
-        for row in range(int(self.max_x / self.grid_spacing + 1)):
-            for col in range(int(self.max_y / self.grid_spacing + 1)):
-                node = Node(
-                    x=col * self.grid_spacing,
-                    y=row * self.grid_spacing,
-                )
-                node.parent_index = self.calculate_node_index(node.x, node.y)
-                nodes[node._id] = node
-        return nodes
+        combines the valid and invalid nodes in the grid
 
-    def calculate_node_index(self, x: float, y: float) -> int:
+        :return: combined nodes
         """
-        Calculates the index of a node in the grid
-        
-        :param x: x-coordinate of the node
-        :param y: y-coordinate of the node
-        :return: index of the node
-        """
-        # index = row_len * y + x
-        return int(
-            ((self.max_x / self.grid_spacing) + 1) *  # row len * 
-            (y / self.grid_spacing) +                 # y +
-            (x / self.grid_spacing)                   # x
-        )
+        return {**self._valid_nodes, **self._invalid_nodes}
 
     def inflate_obstacles(self, inflation_amount: float):
         """
-        Inflate every obstacle's radius by the inflation amount
+        Inflates the obstacles in the grid
+
+        :param inflation_amount: amount to inflate the obstacles by
         """
-        for obstacle in self.obstacles:
-            obstacle.radius += inflation_amount
+        for _id, obstacle in self.obstacles.items():
+            obstacle.inflate(inflation_amount)
 
     def inflate_bounds(self, inflation_amount: float):
         """
-        Shrink the bounds of the grid by the shrink amount
-        """
-        self.min_x += inflation_amount
-        self.max_x -= inflation_amount
-        self.min_y += inflation_amount
-        self.max_y -= inflation_amount
+        Inflates the bounds of the grid
 
-    ############################################################################
-    # NODE VALIDITY
+        :param inflation_amount: amount to inflate the bounds by
+        """
+        self.min_x += self.grid_spacing * round(inflation_amount / self.grid_spacing)
+        self.max_x -= self.grid_spacing * round(inflation_amount / self.grid_spacing)
+        self.min_y += self.grid_spacing * round(inflation_amount / self.grid_spacing)
+        self.max_y -= self.grid_spacing * round(inflation_amount / self.grid_spacing)
 
-    def node_in_obstacle(self, position: Node) -> bool:
+    def node_in_bounds(self, node: Node) -> bool:
         """
-        Checks if a position is in an obstacle
-        :param position: position to check
-        :return: True if in obstacle, False otherwise
-        """
-        return any(obstacle.is_colliding(position) for obstacle in self.obstacles)
-        
-    def node_in_bounds(self, position: Node) -> bool:
-        """
-        Checks if a position is in the bounds of the grid
-        :param position: position to check
-        :return: True if in bounds, False otherwise
+        Checks if a node is in the bounds of the grid
+
+        :param node: node to check
+        :return: True if the node is in the bounds of the grid, False otherwise
         """
         return (
-            position.x >= self.min_x and
-            position.x <= self.max_x and
-            position.y >= self.min_y and
-            position.y <= self.max_y
+            self.min_x <= node.x <= self.max_x
+            and self.min_y <= node.y <= self.max_y
         )
 
-    def is_valid_node(self, position: Node) -> bool:
-        """
-        Checks if a position is valid
-        :param position: position to check
-        :return: True if valid, False otherwise
-        """
-        in_bounds = self.node_in_bounds(position)
-        in_obstacle = self.node_in_obstacle(position)
-        is_valid = in_bounds and not in_obstacle
+    def node_in_obstacle(self, node: Node) -> bool:
+        if node.id in self._invalid_nodes:
+            # invalid_node could be an obstacle's bounding box or 
+            # node outside of the grid
+            invalid_node: Node = self._invalid_nodes[node.id]
 
-        if not is_valid:
-            if not in_bounds:
-                logging.info(f":Node:Out of bounds: {position}")
-            if in_obstacle:
-                logging.info(f":Node:In obstacle: {position}")
+            # check if invalid node has a parent
+            if invalid_node.parent:
 
-        return is_valid
+                # if it does, we deduce it's an obstacle's bounding box
+                obstacle: Obstacle = self.obstacles[invalid_node.parent.id]
+                if obstacle.is_point_inside_obstacle(node):
+                    return True
 
-    def get_invalid_nodes(self) -> set[Node]:
+            else:
+                return True
+
+        return False
+
+    def node_is_valid(self, node: Node) -> bool:
         """
-        Returns a set of valid nodes
+        Checks if a node is valid
+
+        :param node: node to check
+        :return: True if the node is valid, False otherwise
         """
-        return set(
-            node.id 
-            for node 
-            in self._nodes.values() 
-            if not self.is_valid_node(node)
+        return (
+            self.node_in_bounds(node) and
+            not self.node_in_obstacle(node)
         )
 
-    ############################################################################
-    # PLOTTING
-    
-    def plot_obstacles(self, ax: plt.Axes, color: str) -> None:
+    def set_nodes(self):
         """
-        Plots the obstacles in the grid
-        :param ax: matplotlib axes to plot on
-        :param color: color of the obstacles
+        Sets the valid and invalid nodes in the grid
         """
-        for obstacle in self.obstacles:
-            ax.add_artist(plt.Circle(
-                (obstacle.x, obstacle.y),
-                obstacle.radius,
-                color=color,
-                fill=True
-            ))
+        for _id, obstacle in self.obstacles.items():
+            obstacle.set_bounding_box(self.grid_spacing)
 
-    ############################################################################
+            self._invalid_nodes[obstacle.id] = obstacle
+            for _id, invalid_node in obstacle._bounding_box.items():
+                self._invalid_nodes[_id] = invalid_node
+
+        # looping in bound nodes
+        for row in np.arange(
+            self.min_x, self.max_x + self.grid_spacing, self.grid_spacing
+        ):
+            for col in np.arange(
+                self.min_y, self.max_y + self.grid_spacing, self.grid_spacing
+            ):
+                node = Node(
+                    x=row,
+                    y=col
+                )
+
+                if node.id not in self._invalid_nodes:
+                    self._valid_nodes[node.id] = node
+
+    def snap_node_to_grid(self, node: Node) -> Node:
+        """
+        Snaps a node to the grid
+
+        :param node: node to snap
+        :return: snapped node
+        """
+        node.x = round(node.x / self.grid_spacing) * self.grid_spacing
+        node.y = round(node.y / self.grid_spacing) * self.grid_spacing
+        return node

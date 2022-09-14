@@ -1,3 +1,6 @@
+# Simply uncomment a scenario at the top of main() and run it.
+# Scenario's are loaded via ./Scenario.Scenario.loader()
+
 from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 
@@ -6,15 +9,26 @@ from Scenario import Scenario
 
 def main() -> None:
     scenario: Scenario = Scenario().loader(
+        #####  the naming structure for scenarios  #####
+        # "scenarios / SearchType _ grid-size _ bot-size _ grid-spacing.json"
+        # "scenarios/AStar_10x10_bot-0o5_grid-0o5.json"  --> -->
+        # "scenarios / AStar _ 10x10 grid _ bot radius 0.5 _ grid spacing 0.5"
+        # if 'random' is at the end, then random start/goal pos and/or obstacle pos
+        #####
+
+        #####  scenarios in the "scenarios" folder  #####
         # "scenarios/AStar_10x10_bot-0o5_grid-0o5.json"
         # "scenarios/AStar_10x10_bot-0o5_grid-0o5_random.json"
-        # "scenarios/AStar_50x50_bot-0o5_grid-0o5.json"
-        # "scenarios/AStar_50x50_bot-0o5_grid-0o5_random.json"
+        # "scenarios/AStar_50x50_bot-0o5_grid-0o5.json"        # problem 2
+        "scenarios/AStar_50x50_bot-0o5_grid-0o5_random.json"
         # "scenarios/RRT_10x10_bot-0o5_grid-0o5.json"
         # "scenarios/RRT_10x10_bot-0o5_grid-0o5_random.json"
-        "scenarios/RRT_50x50_bot-0o5_grid-0o5.json"
+        # "scenarios/RRT_50x50_bot-0o5_grid-0o5.json"          # problem 3
+        #####
     )
 
+    # we setup the plot before we find the path for debugging - if we want to 
+    # plot while the algorithm is running.
     print("Setting up plot...")
     fig, ax = plt.subplots()
     fig.set_size_inches(8, 8)
@@ -67,6 +81,11 @@ def main() -> None:
     print("Plotting start and goal...")
     scenario.plot_start_and_goal(ax)
 
+    # find a path
+    # if we use random start/goal, we make sure they're are valid, otherwise we
+    # try again. We also try again if the path fails or is not long enough to be 
+    # interesting - at the time of writing this, the path must be 2/3 of the 
+    # width of the grid.
     while True:
         if scenario.start.distance_to(scenario.goal) < scenario.grid.max_x / 1.5:
             print("Start and goal not interesting enough... Regenerating...")
@@ -102,6 +121,8 @@ def main() -> None:
     scenario.plot_path(ax, Colors.light_blue)
 
     print("Showing plot...")
+    # using plt.pause for debugging, plt.show wasn't working when I was using
+    # plt.pause within the algorithm classes
     plt.pause(1000)
 
 if __name__ == "__main__":

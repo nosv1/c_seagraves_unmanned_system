@@ -1,43 +1,18 @@
-import logging
 import matplotlib.pyplot as plt
 
+from Colors import Colors
 from Grid import Grid
 from Node import Node
-from Stopwatch import Stopwatch
+from PathFinder import PathFinder
 
-class AStar:
-    def __init__(self, grid: Grid, start: Node, goal: Node, do_diagonals=True) -> None:
-        self.grid = grid
-        self.start = start
-        self.goal = goal
-        self.do_diagonals = do_diagonals
+class AStar(PathFinder):
+    def __init__(self, start: Node, goal: Node, grid: Grid) -> None:
+        super().__init__(start, goal, grid)
 
-        self._current_node: Node = start
-        self._unvisited_nodes: dict[str, Node] = {
-            self._current_node._id: self._current_node
-        }
-        self._visited_nodes: dict[str, Node] = {}
-        self._path: list[Node] = []
-        self._timings = {
-            "find_path": Stopwatch(),
-        }
-
-    @property
-    def path(self) -> list[Node]:
-        return self._path
-
-    @property
-    def timings(self) -> dict[str, Stopwatch]:
-        return self._timings
-
-    ############################################################################
-
-    def add_neighbors_to_unvisited_nodes(self):
+    def add_neighbors_to_open_set(self):
         """
-        Adds neighbors of the current node to the unvisited nodes list
+        Adds neighbors of the current node to open set.
         """
-        logging.info(":Neighbors:Discovering neighbors...")
-
         # instead of nested loops, we define a list of valid moves
         diagonal_moves = [
             (-self.grid.grid_spacing, -self.grid.grid_spacing),  # left bottom
@@ -56,109 +31,62 @@ class AStar:
         if self.do_diagonals:
             move_list += diagonal_moves
 
-        # loop through valid moves to find our neighbors
         for move in move_list:
-
-            # define the new neighbor based on the valid move
             neighbor: Node = Node(
                 x=self._current_node.x + move[0],
                 y=self._current_node.y + move[1],
                 parent=self._current_node
             )
-            
-            # check if neighbor's position is invalid
-            if neighbor.id in self.grid._invalid_nodes:
+
+            if not self.grid.node_is_valid(neighbor):
                 continue
 
             neighbor.start_to_node_cost = (
-                self._current_node.start_to_node_cost + 
-                neighbor.distance(self._current_node)
+                self._current_node.start_to_node_cost +
+                neighbor.distance_to(self._current_node)
             )
-            neighbor.heuristic_cost = neighbor.distance(self.goal)
+            neighbor.heuristic_cost = neighbor.distance_to(self.goal)
 
-            # if we've noted this neighbor already as being unvisted, update cost and parent as needed
-            if neighbor._id in self._unvisited_nodes:
-                if neighbor.total_cost < self._unvisited_nodes[neighbor._id].total_cost:
-                    self._unvisited_nodes[neighbor._id].start_to_node_cost = neighbor.start_to_node_cost
-                    self._unvisited_nodes[neighbor._id].parent = self._current_node
+            # if we've already noted this neighbor
+            if neighbor.id in self._open_set:
+                # if its cost got cheaper
+                if neighbor.total_cost < self._open_set[neighbor.id].total_cost:
+                    self._open_set[neighbor.id] = neighbor
 
-                logging.info(f":Neighbors:Node:Visited Neighbor: {neighbor}")
+            # brand new neighbor
+            elif neighbor.id not in self._closed_set:
+                self._open_set[neighbor.id] = neighbor
+        
 
-            # otherwise add to unvisited
-            elif neighbor._id not in self._visited_nodes:
-                self._unvisited_nodes[neighbor._id] = neighbor
+    def find_path(self, ax: plt.Axes) -> None:
+        # initialize open set with start node
+        self._open_set[self.start.id] = self.start
 
-                logging.info(f":Neighbors:Node:Unvisted Neighbor: {neighbor}")
-
-            else:
-                logging.info(f":Neighbors:Node:Visited Neighbor: {neighbor}")
-
-    def find_path(self) -> list[Node]:
-        """
-        Finds the shortest path between two nodes using Dijkstra's algorithm
-        :param: start: start node
-        :param: end: end node
-        :param: grid: grid to search on
-        :return: list of nodes in the shortest path
-        """
-        logging.info("Visiting all Nodes...")
-        self._timings["find_path"].start()
-
-        # while there exists unvisted nodes
+        # while we are not at the goal
         while self._current_node != self.goal:
-            # visit current node
-            self._visited_nodes[self._current_node._id] = self._current_node
+            # add neighbors to open set
+            self.add_neighbors_to_open_set()
 
-            # get lowest cost unvisited node
-            self._current_node = min(self._unvisited_nodes.values(), key=lambda x: x.total_cost)
-            logging.info(
-                f":Node:Current Node: " \
-                f"Node("
-                    f"{self._current_node.x}, " \
-                    f"{self._current_node.y}, " \
-                    f"{self._current_node.start_to_node_cost:.1f}, " \
-                    f"{self._current_node.heuristic_cost:.1f} " \
-                f")"
+            # remove current node from open set
+            del self._open_set[self._current_node.id]
+
+            # add current node to closed set
+            self._closed_set[self._current_node.id] = self._current_node
+
+            # get node from open set with smallest total cost
+            self._current_node = min(
+                self._open_set.values(),
+                key=lambda node: node.total_cost
             )
+        
+        # update goal cost and parent with current node
+        self.goal.start_to_node_cost = (
+            self._current_node.start_to_node_cost +
+            self._current_node.distance_to(self.goal)
+        )
+        self.goal.parent = self._current_node
 
-            # remove old node from unvisited nodes
-            del self._unvisited_nodes[self._current_node._id]
-
-            # add neighbors of current node to unvisited nodes, updating costs and parent as necessary
-            self.add_neighbors_to_unvisited_nodes()
-        self._visited_nodes[self._current_node._id] = self._current_node
-
-        self._timings["find_path"].stop()
-        logging.info(f"Visited all Nodes in {self._timings['find_path'].total:.3f} seconds")
-        logging.info("All Nodes visited...")
-
-        # backtrack to find path starting at the goal node
-        self._path = [
-            self._visited_nodes[self.goal._id]
-        ]
-        while self._path[-1].parent:
-            self._path.append(self._visited_nodes[self._path[-1].parent._id])
-
-        logging.info("Path found...")
-        logging.info(f":Path: {', '.join([str(node) for node in self._path])}")
-            
-    ############################################################################
-
-    def plot_visited_nodes(self, ax: plt.Axes, color: str) -> None:
-        """
-        Plots the visited nodes
-        :param: ax: matplotlib axes to plot on
-        :param: color: color to plot the nodes
-        """
-        for node in self._visited_nodes.values():
-            ax.text(
-                node.x, 
-                node.y, 
-                f"{node.total_cost:.1f}", 
-                ha="center", 
-                va="center",
-                fontsize=6,
-                color=color
-            )
-            
-    ############################################################################
+        # get path, looping backwards through the parents
+        self._path = [self.goal]
+        while self._path[-1] != self.start:
+            self._path.append(self._path[-1].parent)
