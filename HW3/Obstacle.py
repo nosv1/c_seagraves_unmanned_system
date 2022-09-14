@@ -1,6 +1,7 @@
 from __future__ import annotations
 import math
 import numpy as np
+import os
 import random
 import re
 
@@ -17,7 +18,8 @@ class Obstacle(Node):
         filename: str, radius: float, delimter: str=","
     ) -> dict[str, Obstacle]:
         obstacles: dict[str, Obstacle] = {}
-        with open(filename) as f:
+        cwd: str = os.path.dirname(os.path.realpath(__file__))
+        with open(os.path.join(cwd, filename), "r") as f:
             for line in f:
                 x, y = line.split(delimter)
                 obstacle: Obstacle = Obstacle(

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import matplotlib.pyplot as plt
+import os
 import random
 
 from AStar import AStar
@@ -52,7 +53,8 @@ class Scenario:
         }
         """
 
-        with open(filename) as f:
+        cwd: str = os.path.dirname(os.path.realpath(__file__))
+        with open(os.path.join(cwd, filename), "r") as f:
             data = json.load(f)
 
         # go down the mandatory keys and set the values
