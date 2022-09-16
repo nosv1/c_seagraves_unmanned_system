@@ -31,7 +31,7 @@ def main() -> None:
     # plot while the algorithm is running.
     print("Setting up plot...")
     fig, ax = plt.subplots()
-    fig.set_size_inches(8, 8)
+    fig.set_size_inches(6, 6)
     
     # set colors
     fig.patch.set_facecolor(Colors.grey)

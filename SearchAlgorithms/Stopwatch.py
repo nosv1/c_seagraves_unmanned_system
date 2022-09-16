@@ -16,10 +16,10 @@ class Stopwatch:
         """
         Starts the stopwatch
         """
-        self.start_time = time.time()
+        self.start_time = time.perf_counter()
 
     def stop(self) -> None:
         """
         Stops the stopwatch
         """
-        self.end = time.time()
+        self.end = time.perf_counter()
