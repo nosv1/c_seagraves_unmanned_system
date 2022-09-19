@@ -65,6 +65,7 @@ def plot_data(data: list[str]) -> None:
 
     fig = plt.figure()
     plt.style.use('dark_background')
+    plt.set_cmap("Blues")
     position_subplot = plt.subplot2grid((3, 2), (0, 0), colspan=1)
     rotation_subplot = plt.subplot2grid((3, 2), (1, 0), colspan=1)
     command_subplot = plt.subplot2grid((3, 2), (2, 0), colspan=1)
@@ -104,8 +105,6 @@ def plot_data(data: list[str]) -> None:
     command_subplot.plot(command_t, command_x, color=Colors.red, label="x", marker="o")
     twin_command.plot(command_t, command_yaw, color=Colors.blue, label="yaw", marker="o")
 
-    # set color gradient style
-    plt.set_cmap("Blues")
     xy_subplot.scatter(current_x, current_y, c=current_t, label="xy")
 
     min_axis = min(min(current_x), min(current_y)) - 0.5
