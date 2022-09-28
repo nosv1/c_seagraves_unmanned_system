@@ -71,6 +71,7 @@ class RRT(PathFinder):
                 * add to open set
         """
         self._open_set[self.start.id] = self.start
+        self._current_node = self.start
 
         # while current node is not in reach of goal
         while self._current_node.distance_to(self.goal) > self.step_length:

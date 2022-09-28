@@ -1,13 +1,18 @@
 from __future__ import annotations
 
+# python imports
 import json
 import matplotlib.pyplot as plt
 import os
 import random
 
+# path finders imports
 from AStar import AStar
-from Colors import Colors
+from Dijkstra import Dijkstra
 from RRT import RRT
+
+# support imports
+from Colors import Colors
 from Grid import Grid
 from Node import Node
 from Obstacle import Obstacle
@@ -42,7 +47,7 @@ class Scenario:
         goal: float | "random"
         algorithm: {
 
-            type: "AStar" | "RRT"
+            type: "AStar" | "Dijkstra" | "RRT"
 
             params: {
 
@@ -122,7 +127,7 @@ class Scenario:
             )
 
         key = "algorithm"
-        self.algorithm: RRT | AStar = eval(data[key]["type"])(
+        self.algorithm: AStar | Dijkstra | RRT  = eval(data[key]["type"])(
             start=self.start,
             goal=self.goal,
             grid=self.grid,

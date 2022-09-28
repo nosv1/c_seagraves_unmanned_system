@@ -15,7 +15,7 @@ class PathFinder:
         self.grid = grid
         self.do_diagonals = do_diagonals
 
-        self._current_node: Node = self.start
+        self._current_node: Node = None
         self._open_set: dict[str, Node] = {}
         self._closed_set: dict[str, Node] = {}
         self._path: list[Node] = []

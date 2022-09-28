@@ -5,7 +5,7 @@ from Grid import Grid
 from Node import Node
 from PathFinder import PathFinder
 
-class AStar(PathFinder):
+class Dijkstra(PathFinder):
     def __init__(self, start: Node, goal: Node, grid: Grid) -> None:
         super().__init__(start, goal, grid)
 
@@ -45,7 +45,6 @@ class AStar(PathFinder):
                 self._current_node.start_to_node_cost +
                 neighbor.distance_to(self._current_node)
             )
-            neighbor.heuristic_cost = neighbor.distance_to(self.goal)
 
             # if we've already noted this neighbor
             if neighbor.id in self._open_set:
@@ -61,10 +60,15 @@ class AStar(PathFinder):
     def find_path(self, ax: plt.Axes) -> None:
         # initialize open set with start node
         self._open_set[self.start.id] = self.start
-        self._current_node = self.start
 
         # while we are not at the goal
-        while self._current_node != self.goal:
+        while self._open_set:
+            # get node from open set with smallest total cost
+            self._current_node = min(
+                self._open_set.values(),
+                key=lambda node: node.total_cost
+            )
+
             # add neighbors to open set
             self.add_neighbors_to_open_set()
 
@@ -74,20 +78,7 @@ class AStar(PathFinder):
             # add current node to closed set
             self._closed_set[self._current_node.id] = self._current_node
 
-            # get node from open set with smallest total cost
-            self._current_node = min(
-                self._open_set.values(),
-                key=lambda node: node.total_cost
-            )
-        
-        # update goal cost and parent with current node
-        self.goal.start_to_node_cost = (
-            self._current_node.start_to_node_cost +
-            self._current_node.distance_to(self.goal)
-        )
-        self.goal.parent = self._current_node
-
         # get path, looping backwards through the parents
-        self._path = [self.goal]
+        self._path = [self._closed_set[self.goal.id]]
         while self._path[-1] != self.start:
             self._path.append(self._path[-1].parent)

@@ -19,11 +19,14 @@ def main() -> None:
         #####  scenarios in the "scenarios" folder  #####
         # "scenarios/AStar_10x10_bot-0o5_grid-0o5.json"
         # "scenarios/AStar_10x10_bot-0o5_grid-0o5_random.json"
-        # "scenarios/AStar_50x50_bot-0o5_grid-0o5.json"        # problem 2
-        "scenarios/AStar_50x50_bot-0o5_grid-0o5_random.json"
+        # "scenarios/AStar_15x15_bot-0o5_grid-1o0.json"        # HW5 problem 1a
+        # "scenarios/AStar_50x50_bot-0o5_grid-0o5.json"        # HW3 problem 2
+        # "scenarios/AStar_50x50_bot-0o5_grid-0o5_random.json"
+        # "scenarios/Dijkstra_15x15_bot-0o5_grid-1o0.json"     # HW5 problem 1b
         # "scenarios/RRT_10x10_bot-0o5_grid-0o5.json"
         # "scenarios/RRT_10x10_bot-0o5_grid-0o5_random.json"
-        # "scenarios/RRT_50x50_bot-0o5_grid-0o5.json"          # problem 3
+        "scenarios/RRT_15x15_bot-0o5_grid-1o0.json"          # HW5 problem 1c
+        # "scenarios/RRT_50x50_bot-0o5_grid-0o5.json"          # HW3 problem 3
         #####
     )
 
