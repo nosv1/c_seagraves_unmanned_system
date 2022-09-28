@@ -19,13 +19,13 @@ def main() -> None:
         #####  scenarios in the "scenarios" folder  #####
         # "scenarios/AStar_10x10_bot-0o5_grid-0o5.json"
         # "scenarios/AStar_10x10_bot-0o5_grid-0o5_random.json"
-        # "scenarios/AStar_15x15_bot-0o5_grid-1o0.json"        # HW5 problem 1a
+        "scenarios/AStar_15x15_bot-0o5_grid-1o0.json"        # HW5 problem 1a
         # "scenarios/AStar_50x50_bot-0o5_grid-0o5.json"        # HW3 problem 2
         # "scenarios/AStar_50x50_bot-0o5_grid-0o5_random.json"
         # "scenarios/Dijkstra_15x15_bot-0o5_grid-1o0.json"     # HW5 problem 1b
         # "scenarios/RRT_10x10_bot-0o5_grid-0o5.json"
         # "scenarios/RRT_10x10_bot-0o5_grid-0o5_random.json"
-        "scenarios/RRT_15x15_bot-0o5_grid-1o0.json"          # HW5 problem 1c
+        # "scenarios/RRT_15x15_bot-0o5_grid-1o0.json"          # HW5 problem 1c
         # "scenarios/RRT_50x50_bot-0o5_grid-0o5.json"          # HW3 problem 3
         #####
     )
@@ -90,7 +90,10 @@ def main() -> None:
     # interesting - at the time of writing this, the path must be 2/3 of the 
     # width of the grid.
     while True:
-        if scenario.start.distance_to(scenario.goal) < scenario.grid.max_x / 1.5:
+        if (
+            (scenario.has_random_start or scenario.has_random_goal) and 
+            scenario.start.distance_to(scenario.goal) < scenario.grid.max_x / 1.5
+        ):
             print("Start and goal not interesting enough... Regenerating...")
             plt.close()
             main()
@@ -113,7 +116,7 @@ def main() -> None:
     # set title
     ax.set_title(
         f"{scenario.algorithm.__class__.__name__}\n"
-        f"Time: {scenario.algorithm.stopwatch.elapsed_time:.2f}s, Cost: {scenario.algorithm._path[0].total_cost:.2f}"
+        f"Time: {scenario.algorithm.stopwatch.elapsed_time:.3f}s, Cost: {scenario.algorithm._path[0].total_cost:.2f}"
     )
 
     print("Plotting open set...")

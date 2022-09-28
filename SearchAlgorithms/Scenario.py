@@ -79,6 +79,7 @@ class Scenario:
         )
 
         key = "obstacles"
+        self.has_random_obstacles = False
         self.obstacle_radius = data[key]["radius"]
 
         if "file" in data[key]:
@@ -88,6 +89,7 @@ class Scenario:
             )
 
         else:
+            self.has_random_obstacles = True
             self.obstacles = Obstacle.generate_obstacles(
                 count=data[key]["count"],
                 radius=self.obstacle_radius,
@@ -107,7 +109,9 @@ class Scenario:
         self.grid.set_nodes()
 
         key = "start"
+        self.has_random_start = False
         if data[key] == "random":
+            self.has_random_start = True
             self.start = random.choice(list(self.grid._valid_nodes.values()))
 
         else:
@@ -117,7 +121,9 @@ class Scenario:
             )
 
         key = "goal"
+        self.has_random_goal = False
         if data[key] == "random":
+            self.has_random_goal = True
             self.goal = random.choice(list(self.grid._valid_nodes.values()))
 
         else:
