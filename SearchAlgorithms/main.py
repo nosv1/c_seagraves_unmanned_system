@@ -102,7 +102,7 @@ def main() -> None:
         try:
             print("Finding path...")
             scenario.algorithm.stopwatch.start()
-            scenario.algorithm.find_path(ax)
+            scenario.algorithm.find_path()
             scenario.algorithm.stopwatch.stop()
             print(f"Path found... Time: {scenario.algorithm.stopwatch.elapsed_time:.5f}s")
             break

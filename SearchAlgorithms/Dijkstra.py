@@ -57,7 +57,7 @@ class Dijkstra(PathFinder):
                 self._open_set[neighbor.id] = neighbor
         
 
-    def find_path(self, ax: plt.Axes) -> None:
+    def find_path(self) -> None:
         # initialize open set with start node
         self._open_set[self.start.id] = self.start
 

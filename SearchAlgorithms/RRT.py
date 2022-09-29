@@ -61,7 +61,7 @@ class RRT(PathFinder):
                 return False
         return True
 
-    def find_path(self, ax: plt.Axes) -> None:
+    def find_path(self) -> None:
         """
         While current node is not in reach of goal
             - Generate random node
