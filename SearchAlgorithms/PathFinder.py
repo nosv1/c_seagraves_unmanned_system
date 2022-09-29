@@ -21,3 +21,15 @@ class PathFinder:
         self._path: list[Node] = []
 
         self.stopwatch: Stopwatch = Stopwatch()
+
+    @property
+    def path(self) -> list[Node]:
+        return self._path
+
+    @property
+    def open_set(self) -> dict[str, Node]:
+        return self._open_set
+
+    @property
+    def closed_set(self) -> dict[str, Node]:
+        return self._closed_set
