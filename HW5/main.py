@@ -115,7 +115,7 @@ def main():
     points: list[Point] = []
     min_axes: float = 0.0
     max_axes: float = 20.0
-    for i in range(11):  ## input number of points here, more than 11 is slow
+    for i in range(10):  ## input number of points here, more than 11 is slow
         points.append(Point(x=random() * max_axes, y=random() * max_axes))
 
     tsp: TSP = TSP(points)
