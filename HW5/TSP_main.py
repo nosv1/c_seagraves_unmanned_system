@@ -23,10 +23,6 @@ class Point:
     def __str__(self):
         return f"({self.x:.2f}, {self.y:.2f})"
 
-    def point_from_key(key: str) -> Point:
-        x, y = key.strip("()").split(",")
-        return Point(float(x), float(y))
-
     def distance_to(self, other: Point) -> float:
         return ((self.x - other.x) ** 2 + (self.y - other.y) ** 2) ** 0.5
 
@@ -47,10 +43,24 @@ class Path:
     def plot(self, color: str, linestyle="--", text_points=False):
         x = [point.x for point in self.path]
         y = [point.y for point in self.path]
-        plt.plot(x, y, marker="o", color=color, linestyle=linestyle, alpha=0.3, label=f"Distance: {self.distance:.2f}")
+        plt.plot(
+            x, y, 
+            marker="o", 
+            color=color, 
+            linestyle=linestyle, 
+            alpha=0.5, 
+            label=f"Distance: {self.distance:.2f}"
+        )
         if text_points:
             for i, point in enumerate(self.path):
-                plt.text(point.x+.15, point.y+.15, f"{i+1}: {point}", ha="center", va="center", bbox=dict(facecolor='white', alpha=0.85))
+                plt.text(
+                    point.x+.15, 
+                    point.y+.15, 
+                    f"{i+1}: {point}", 
+                    ha="center", 
+                    va="center", 
+                    bbox=dict(facecolor='white', alpha=0.85)
+                )
 
 class TSP:
     def __init__(self, points: list[Point]) -> None:
@@ -62,6 +72,13 @@ class TSP:
         print("Creating distance matrix...")
 
         matrix: dict[str, dict[str, float]] = {}
+        # {
+        #     "point1": {
+        #         "point2": distance,
+        #         "point3": distance,
+        #         ...
+        #     },
+        # }
         for point in self.points:
             matrix[point.key] = {}
             for other in self.points:
@@ -115,7 +132,7 @@ def main():
     points: list[Point] = []
     min_axes: float = 0.0
     max_axes: float = 20.0
-    for i in range(10):  ## input number of points here, more than 11 is slow
+    for i in range(11):  ## input number of points here, more than 11 is slow
         points.append(Point(x=random() * max_axes, y=random() * max_axes))
 
     tsp: TSP = TSP(points)
