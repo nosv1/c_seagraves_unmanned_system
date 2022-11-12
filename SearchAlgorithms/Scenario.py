@@ -142,9 +142,11 @@ class Scenario:
 
         return self
 
-    def plot_start_and_goal(self, ax) -> None:
+    def plot_start_and_goal(self, ax, text="") -> None:
         ax.plot(self.start.x, self.start.y, "go", markersize=8)
         ax.plot(self.goal.x, self.goal.y, "ro", markersize=8)
+        if text:
+            ax.text(self.goal.x, self.goal.y, text, fontsize=12, color=Colors.light_grey)
 
     def plot_obstacles(self, ax: plt.Axes, color: str):
         """

@@ -1,6 +1,7 @@
 # Simply uncomment a scenario at the top of main() and run it.
 # Scenario's are loaded via ./Scenario.Scenario.loader()
 
+import copy
 from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 
@@ -19,13 +20,15 @@ def main() -> None:
         #####  scenarios in the "scenarios" folder  #####
         # "scenarios/AStar_10x10_bot-0o5_grid-0o5.json"
         # "scenarios/AStar_10x10_bot-0o5_grid-0o5_random.json"
+        # "scenarios/AStar_15x15_bot-0o5_grid-0o5a.json"       # Exam2 Problem 3
+        "scenarios/AStar_15x15_bot-0o5_grid-0o5b.json"       # Exam2 Problem 4
         # "scenarios/AStar_15x15_bot-0o5_grid-1o0.json"        # HW5 problem 1a
         # "scenarios/AStar_50x50_bot-0o5_grid-0o5.json"        # HW3 problem 2
         # "scenarios/AStar_50x50_bot-0o5_grid-0o5_random.json"
         # "scenarios/Dijkstra_15x15_bot-0o5_grid-1o0.json"     # HW5 problem 1b
         # "scenarios/RRT_10x10_bot-0o5_grid-0o5.json"
         # "scenarios/RRT_10x10_bot-0o5_grid-0o5_random.json"
-        "scenarios/RRT_15x15_bot-0o5_grid-1o0.json"          # HW5 problem 1c
+        # "scenarios/RRT_15x15_bot-0o5_grid-1o0.json"          # HW5 problem 1c
         # "scenarios/RRT_50x50_bot-0o5_grid-0o5.json"          # HW3 problem 3
         #####
     )
@@ -75,56 +78,119 @@ def main() -> None:
         ],
         fancybox=True,
         shadow=True,
-        loc="upper right"
+        loc="upper right",
+        bbox_to_anchor=(1.125, 1.0)
     )
-    # print("Plotting obstacles")
-    # scenario.plot_obstacles(ax, Colors.red)
-    print("Plotting nodes...")
-    scenario.plot_nodes(ax, invalid_nodes=True, valid_nodes=False)
-    print("Plotting start and goal...")
-    scenario.plot_start_and_goal(ax)
 
-    # find a path
-    # if we use random start/goal, we make sure they're are valid, otherwise we
-    # try again. We also try again if the path fails or is not long enough to be 
-    # interesting - at the time of writing this, the path must be 2/3 of the 
-    # width of the grid.
-    while True:
-        if (
-            (scenario.has_random_start or scenario.has_random_goal) and 
-            scenario.start.distance_to(scenario.goal) < scenario.grid.max_x / 1.5
-        ):
-            print("Start and goal not interesting enough... Regenerating...")
-            plt.close()
-            main()
-            return
+    from Node import Node
+    goals = [
+        Node(9,7),
+        Node(1,9),
+        Node(4,4),
+        Node(9,4),
+        Node(6,14),
+        Node(3,11),
+        Node(14,1),
+        # Node(1,14),
+        # Node(14,14),
+        # Node(7,10)
+    ]
 
-        try:
+    from itertools import permutations
+    goals_permutations = list(permutations(goals))
+    print(f"Number of permutations: {len(goals_permutations)}")
+
+    og_scenario = copy.deepcopy(scenario)
+    pre_tsp = copy.deepcopy(og_scenario)
+    og_scenario.algorithm.stopwatch.start()
+    min_cost = float('inf')
+    scenario_paths: list[Scenario] = []
+    for i, permutation in enumerate(goals_permutations[:10]):
+        print(f"Permutation {i+1} of {len(goals_permutations)}")
+
+        pre_tsp.start = Node(og_scenario.start.x, og_scenario.start.y)
+        pre_tsp.algorithm.start = Node(og_scenario.start.x, og_scenario.start.y)
+        total_cost = 0
+        paths = []
+        for i, goal in enumerate(permutation):
+            scenario.algorithm.reset()
+            scenario.start = pre_tsp.start
+            scenario.algorithm.start = pre_tsp.start
+            scenario.goal = goal
+            scenario.algorithm.goal = goal
+
             print("Finding path...")
             scenario.algorithm.stopwatch.start()
             scenario.algorithm.find_path()
             scenario.algorithm.stopwatch.stop()
-            print(f"Path found... Time: {scenario.algorithm.stopwatch.elapsed_time:.5f}s")
-            break
+            total_cost += scenario.algorithm._path[0].total_cost
+            paths.append((scenario.algorithm.start, scenario.algorithm.goal, scenario.algorithm.path))
 
-        except ValueError:
-            print("No path found... Regenerating...")
-            plt.close()
-            main()
-            return
+            pre_tsp.start = Node(goal.x, goal.y)
+            pre_tsp.algorithm.start = Node(goal.x, goal.y)
+        
+        if total_cost < min_cost:
+            min_cost = total_cost
+            scenario_paths = paths
+        print(f"Total cost: {total_cost}")
+        print(f"Shortest cost: {min_cost}")
+    og_scenario.algorithm.stopwatch.stop()
 
-    # set title
-    ax.set_title(
-        f"{scenario.algorithm.__class__.__name__}\n"
-        f"Time: {scenario.algorithm.stopwatch.elapsed_time:.3f}s, Cost: {scenario.algorithm._path[0].total_cost:.2f}"
-    )
+    for i, (start, goal, path) in enumerate(scenario_paths):
+        scenario = copy.deepcopy(og_scenario)
+        scenario.start = start
+        scenario.goal = goal
+        scenario.algorithm._path = path
+        # print("Plotting obstacles")
+        # scenario.plot_obstacles(ax, Colors.red)
+        print("Plotting nodes...")
+        scenario.plot_nodes(ax, invalid_nodes=True, valid_nodes=False)
 
-    print("Plotting open set...")
-    scenario.plot_open_set(ax, color=Colors.light_purple)
-    print("Plotting closed set...")
-    scenario.plot_closed_set(ax, Colors.light_grey)
-    print("Plotting path...")
-    scenario.plot_path(ax, Colors.light_blue)
+        print("Plotting start and goal...")
+        scenario.plot_start_and_goal(ax, i+1)
+
+        # find a path
+        # if we use random start/goal, we make sure they're are valid, otherwise we
+        # try again. We also try again if the path fails or is not long enough to be 
+        # interesting - at the time of writing this, the path must be 2/3 of the 
+        # width of the grid.
+        # while True:
+        #     if (
+        #         (scenario.has_random_start or scenario.has_random_goal) and 
+        #         scenario.start.distance_to(scenario.goal) < scenario.grid.max_x / 1.5
+        #     ):
+        #         print("Start and goal not interesting enough... Regenerating...")
+        #         plt.close()
+        #         main()
+        #         return
+
+        #     try:
+        #         print("Finding path...")
+        #         scenario.algorithm.stopwatch.start()
+        #         scenario.algorithm.find_path()
+        #         scenario.algorithm.stopwatch.stop()
+        #         print(f"Path found... Time: {scenario.algorithm.stopwatch.elapsed_time:.5f}s")
+        #         break
+
+        #     except ValueError:
+        #         print("No path found... Regenerating...")
+        #         plt.close()
+        #         main()
+        #         return
+
+        # set title
+        ax.set_title(
+            f"{scenario.algorithm.__class__.__name__}\n"
+            # f"Time: {scenario.algorithm.stopwatch.elapsed_time:.3f}s, Cost: {scenario.algorithm._path[0].total_cost:.2f}"
+            f"Time: {og_scenario.algorithm.stopwatch.elapsed_time:.3f}s, Cost: {min_cost:.2f}"
+        )
+
+        # print("Plotting open set...")
+        # scenario.plot_open_set(ax, color=Colors.light_purple)
+        # print("Plotting closed set...")
+        # scenario.plot_closed_set(ax, Colors.light_grey)
+        print("Plotting path...")
+        scenario.plot_path(ax, Colors.light_blue)
 
     print("Showing plot...")
     # using plt.pause for debugging, plt.show wasn't working when I was using

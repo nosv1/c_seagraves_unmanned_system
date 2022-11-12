@@ -17,12 +17,7 @@ class PathFinder:
         self.grid = grid
         self.do_diagonals = do_diagonals
 
-        self._current_node: Node = None
-        self._open_set: dict[str, Node] = {}
-        self._closed_set: dict[str, Node] = {}
-        self._path: list[Node] = []
-
-        self.stopwatch: Stopwatch = Stopwatch()
+        self.reset()
 
     @property
     def path(self) -> list[Node]:
@@ -35,3 +30,11 @@ class PathFinder:
     @property
     def closed_set(self) -> dict[str, Node]:
         return self._closed_set
+
+    def reset(self) -> None:
+        self._current_node: Node = None
+        self._open_set: dict[str, Node] = {}
+        self._closed_set: dict[str, Node] = {}
+        self._path: list[Node] = []
+
+        self.stopwatch: Stopwatch = Stopwatch()
