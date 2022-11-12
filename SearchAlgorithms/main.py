@@ -83,7 +83,8 @@ def main() -> None:
     )
 
     from Node import Node
-    goals = [
+    nodes = [
+        Node(1,1),
         Node(9,7),
         Node(1,9),
         Node(4,4),
@@ -91,53 +92,51 @@ def main() -> None:
         Node(6,14),
         Node(3,11),
         Node(14,1),
-        # Node(1,14),
-        # Node(14,14),
-        # Node(7,10)
+        Node(1,14),
+        Node(14,14),
+        Node(7,10)
     ]
 
-    from itertools import permutations
-    goals_permutations = list(permutations(goals))
-    print(f"Number of permutations: {len(goals_permutations)}")
-
-    og_scenario = copy.deepcopy(scenario)
-    pre_tsp = copy.deepcopy(og_scenario)
-    og_scenario.algorithm.stopwatch.start()
-    min_cost = float('inf')
-    scenario_paths: list[Scenario] = []
-    for i, permutation in enumerate(goals_permutations[:10]):
-        print(f"Permutation {i+1} of {len(goals_permutations)}")
-
-        pre_tsp.start = Node(og_scenario.start.x, og_scenario.start.y)
-        pre_tsp.algorithm.start = Node(og_scenario.start.x, og_scenario.start.y)
-        total_cost = 0
-        paths = []
-        for i, goal in enumerate(permutation):
+    cost_matrix: dict[str, dict[str, float]] = {}
+    path_matrix: dict[str, dict[str, list[Node]]] = {}
+    
+    for i, start in enumerate(nodes):
+        for j, goal in enumerate(nodes):
+            if i == j:
+                continue
             scenario.algorithm.reset()
-            scenario.start = pre_tsp.start
-            scenario.algorithm.start = pre_tsp.start
-            scenario.goal = goal
+            scenario.algorithm.start = start
             scenario.algorithm.goal = goal
-
-            print("Finding path...")
-            scenario.algorithm.stopwatch.start()
             scenario.algorithm.find_path()
-            scenario.algorithm.stopwatch.stop()
-            total_cost += scenario.algorithm._path[0].total_cost
-            paths.append((scenario.algorithm.start, scenario.algorithm.goal, scenario.algorithm.path))
+            cost_matrix[start.id, goal.id] = scenario.algorithm.path[0].total_cost
+            path_matrix[start.id, goal.id] = scenario.algorithm.path
 
-            pre_tsp.start = Node(goal.x, goal.y)
-            pre_tsp.algorithm.start = Node(goal.x, goal.y)
+    from itertools import permutations
+    goals_permutations = list(permutations(nodes[1:]))
+    print(f"Number of permutations: {len(goals_permutations)}")
+    
+    scenario.algorithm.stopwatch.start()
+    scenario_paths = []
+    min_cost = float('inf')
+    for i, permutation in enumerate(goals_permutations):
+        print(f"Permutation {i+1}/{len(goals_permutations)}", end="\r")
         
+        total_cost = 0
+        start = nodes[0]
+        paths = []
+
+        for goal in permutation:
+            total_cost += cost_matrix[start.id, goal.id]
+            paths.append((start, goal, path_matrix[start.id, goal.id]))
+            start = goal
+        total_cost += cost_matrix[scenario.start.id, permutation[0].id]
+
         if total_cost < min_cost:
             min_cost = total_cost
             scenario_paths = paths
-        print(f"Total cost: {total_cost}")
-        print(f"Shortest cost: {min_cost}")
-    og_scenario.algorithm.stopwatch.stop()
+    scenario.algorithm.stopwatch.stop()
 
     for i, (start, goal, path) in enumerate(scenario_paths):
-        scenario = copy.deepcopy(og_scenario)
         scenario.start = start
         scenario.goal = goal
         scenario.algorithm._path = path
@@ -182,7 +181,7 @@ def main() -> None:
         ax.set_title(
             f"{scenario.algorithm.__class__.__name__}\n"
             # f"Time: {scenario.algorithm.stopwatch.elapsed_time:.3f}s, Cost: {scenario.algorithm._path[0].total_cost:.2f}"
-            f"Time: {og_scenario.algorithm.stopwatch.elapsed_time:.3f}s, Cost: {min_cost:.2f}"
+            f"Time: {scenario.algorithm.stopwatch.elapsed_time:.3f}s, Cost: {min_cost:.2f}"
         )
 
         # print("Plotting open set...")
