@@ -30,15 +30,24 @@ class Path:
     def __init__(self, path: tuple[Point]=()) -> None:
         self.path = path
 
-        self.get_distance()
+        self.__distance: float = None
+        self.find_distance()
 
-    def get_distance(self):
-        self.distance: float = 0.0
+    @property
+    def distance(self) -> float:
+        return self.__distance
+
+    def set_distance(self, distance: float):
+        self.__distance = distance
+
+    def find_distance(self):
+        distance: float = 0.0
         for i, point in enumerate(self.path):
             if not i:
                 continue
-            self.distance += point.distance_to(self.path[i - 1])
-        self.distance = self.distance if self.distance else float('inf')
+            distance += point.distance_to(self.path[i-1])
+        distance += distance if distance else float("inf")
+        self.set_distance(distance)
 
     def plot(self, color: str, linestyle="--", text_points=False):
         x = [point.x for point in self.path]
@@ -49,7 +58,7 @@ class Path:
             color=color, 
             linestyle=linestyle, 
             alpha=0.5, 
-            label=f"Distance: {self.distance:.2f}"
+            label=f"Distance: {self.__distance:.2f}"
         )
         if text_points:
             for i, point in enumerate(self.path):
@@ -90,23 +99,26 @@ class TSP:
         # if we knew start was [0] slicing could be faster
         points = [point for point in self.points if point.key != start.key]
 
+        # create permutations
         start_time: float = perf_counter()
         print(f"Generating {factorial(len(points)):,} permutations...", end=" ")
         path_permutations: list[tuple[Point]] = list(permutations(points))
         print(f"{perf_counter() - start_time:.2f}s")
 
+        # calculate distances
         start_time: float = perf_counter()        
         print("Calculating distances...", end=" ")
         paths: list[Path] = None
         with Pool() as pool:
             paths = pool.map(create_path, path_permutations)
-            print(f"{perf_counter() - start_time:.2f}s")
+        print(f"{perf_counter() - start_time:.2f}s")
 
+        # find top paths
         start_time: float = perf_counter()
         print(f"Finding top {count} path(s)...", end=" ")
         top_paths: list[Path] = [Path() for _ in range(count)]
         for path in paths:
-            path.distance = (
+            path.set_distance(
                 path.distance +
                 self.distance_matrix[start.key][path.path[0].key]
             )
