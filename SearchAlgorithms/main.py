@@ -20,8 +20,8 @@ def main() -> None:
         #####  scenarios in the "scenarios" folder  #####
         # "scenarios/AStar_10x10_bot-0o5_grid-0o5.json"
         # "scenarios/AStar_10x10_bot-0o5_grid-0o5_random.json"
-        # "scenarios/AStar_15x15_bot-0o5_grid-0o5a.json"       # Exam2 Problem 3
-        "scenarios/AStar_15x15_bot-0o5_grid-0o5b.json"       # Exam2 Problem 4
+        "scenarios/AStar_15x15_bot-0o5_grid-0o5a.json"       # Exam2 Problem 3
+        # "scenarios/AStar_15x15_bot-0o5_grid-0o5b.json"       # Exam2 Problem 4
         # "scenarios/AStar_15x15_bot-0o5_grid-1o0.json"        # HW5 problem 1a
         # "scenarios/AStar_50x50_bot-0o5_grid-0o5.json"        # HW3 problem 2
         # "scenarios/AStar_50x50_bot-0o5_grid-0o5_random.json"
@@ -83,19 +83,27 @@ def main() -> None:
     )
 
     from Node import Node
-    nodes = [
-        Node(1,1),
-        Node(9,7),
-        Node(1,9),
-        Node(4,4),
+    nodes = [  # problem 3
+        Node(0,0),
         Node(9,4),
-        Node(6,14),
-        Node(3,11),
-        Node(14,1),
-        Node(1,14),
-        Node(14,14),
-        Node(7,10)
+        Node(4,4),
+        Node(1,9),
+        Node(9,7),
+        Node(6,14)
     ]
+    # nodes = [  # problem 4 and 5
+    #     Node(1,1),
+    #     Node(9,7),
+    #     Node(1,9),
+    #     Node(4,4),
+    #     Node(9,4),
+    #     Node(6,14),
+    #     Node(3,11),
+    #     Node(14,1),
+    #     Node(1,14),
+    #     Node(14,14),
+    #     Node(7,10)
+    # ]
 
     cost_matrix: dict[str, dict[str, float]] = {}
     path_matrix: dict[str, dict[str, list[Node]]] = {}
