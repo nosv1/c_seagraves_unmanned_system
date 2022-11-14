@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 
 from Colors import Colors
 from Scenario import Scenario
+from Stopwatch import Stopwatch
 
 def main() -> None:
     scenario: Scenario = Scenario().loader(
@@ -20,8 +21,8 @@ def main() -> None:
         #####  scenarios in the "scenarios" folder  #####
         # "scenarios/AStar_10x10_bot-0o5_grid-0o5.json"
         # "scenarios/AStar_10x10_bot-0o5_grid-0o5_random.json"
-        "scenarios/AStar_15x15_bot-0o5_grid-0o5a.json"       # Exam2 Problem 3
-        # "scenarios/AStar_15x15_bot-0o5_grid-0o5b.json"       # Exam2 Problem 4
+        # "scenarios/AStar_15x15_bot-0o5_grid-0o5a.json"       # Exam2 Problem 3
+        "scenarios/AStar_15x15_bot-0o5_grid-0o5b.json"       # Exam2 Problem 4
         # "scenarios/AStar_15x15_bot-0o5_grid-1o0.json"        # HW5 problem 1a
         # "scenarios/AStar_50x50_bot-0o5_grid-0o5.json"        # HW3 problem 2
         # "scenarios/AStar_50x50_bot-0o5_grid-0o5_random.json"
@@ -83,36 +84,40 @@ def main() -> None:
     )
 
     from Node import Node
-    nodes = [  # problem 3
-        Node(0,0),
-        Node(9,4),
-        Node(4,4),
-        Node(1,9),
-        Node(9,7),
-        Node(6,14)
-    ]
-    # nodes = [  # problem 4 and 5
-    #     Node(1,1),
-    #     Node(9,7),
-    #     Node(1,9),
-    #     Node(4,4),
+    # nodes = [  # problem 3
+    #     Node(0,0),
     #     Node(9,4),
-    #     Node(6,14),
-    #     Node(3,11),
-    #     Node(14,1),
-    #     Node(1,14),
-    #     Node(14,14),
-    #     Node(7,10)
+    #     Node(4,4),
+    #     Node(1,9),
+    #     Node(9,7),
+    #     Node(6,14)
     # ]
+    nodes = [  # problem 4 and 5
+        Node(1,1),
+        Node(9,7),
+        Node(1,9),
+        Node(4,4),
+        Node(9,4),
+        Node(6,14),
+        Node(3,11),
+        Node(14,1),
+        Node(1,14),
+        Node(14,14),
+        Node(7,10)
+    ]
 
     cost_matrix: dict[str, dict[str, float]] = {}
     path_matrix: dict[str, dict[str, list[Node]]] = {}
     
+    stopwatch = Stopwatch()
+    stopwatch.start()
     for i, start in enumerate(nodes):
         for j, goal in enumerate(nodes):
             if i == j:
                 continue
             scenario.algorithm.reset()
+            start.reset()
+            goal.reset()
             scenario.algorithm.start = start
             scenario.algorithm.goal = goal
             scenario.algorithm.find_path()
@@ -123,18 +128,18 @@ def main() -> None:
     goals_permutations = list(permutations(nodes[1:]))
     print(f"Number of permutations: {len(goals_permutations)}")
     
-    scenario.algorithm.stopwatch.start()
     scenario_paths = []
     min_cost = float('inf')
     for i, permutation in enumerate(goals_permutations):
-        print(f"Permutation {i+1}/{len(goals_permutations)}", end="\r")
+        # print(f"Permutation {i+1}/{len(goals_permutations)}", end="\r")
         
         total_cost = 0
         start = nodes[0]
         paths = []
 
         for goal in permutation:
-            total_cost += cost_matrix[start.id, goal.id]
+            cost = cost_matrix[start.id, goal.id]
+            total_cost += cost
             paths.append((start, goal, path_matrix[start.id, goal.id]))
             start = goal
         total_cost += cost_matrix[scenario.start.id, permutation[0].id]
@@ -142,7 +147,7 @@ def main() -> None:
         if total_cost < min_cost:
             min_cost = total_cost
             scenario_paths = paths
-    scenario.algorithm.stopwatch.stop()
+    stopwatch.stop()
 
     for i, (start, goal, path) in enumerate(scenario_paths):
         scenario.start = start
@@ -189,7 +194,7 @@ def main() -> None:
         ax.set_title(
             f"{scenario.algorithm.__class__.__name__}\n"
             # f"Time: {scenario.algorithm.stopwatch.elapsed_time:.3f}s, Cost: {scenario.algorithm._path[0].total_cost:.2f}"
-            f"Time: {scenario.algorithm.stopwatch.elapsed_time:.3f}s, Cost: {min_cost:.2f}"
+            f"Time: {stopwatch.elapsed_time:.3f}s, Cost: {min_cost:.2f}"
         )
 
         # print("Plotting open set...")

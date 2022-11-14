@@ -135,6 +135,8 @@ for i, start in enumerate(nodes):
         if i == j:
             continue
         scenario.algorithm.reset()
+        start.reset()
+        goal.reset()
         scenario.algorithm.start = start
         scenario.algorithm.goal = goal
         scenario.algorithm.find_path()

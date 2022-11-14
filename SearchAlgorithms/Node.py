@@ -39,6 +39,11 @@ class Node:
         x, y = id_str[1:-1].split(", ")
         return Node(float(x), float(y))
 
+    def reset(self):
+        self.start_to_node_cost = 0
+        self.heuristic_cost = 0
+        self.parent = None
+
     def distance_to(self, other: Node) -> float:
         """
         Calculates the ecuclidean distance between two nodes
