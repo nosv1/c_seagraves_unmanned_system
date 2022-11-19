@@ -1,5 +1,5 @@
 {
-    "bot_radius": 0.0,
+    "bot_radius": 0.5,
     "grid": {
         "min_x": 0,
         "max_x": 15,
@@ -8,8 +8,8 @@
         "grid_spacing": 0.5
     },
     "start": {
-        "x": 0,
-        "y": 0
+        "x": 1,
+        "y": 1
     },
     "goal": {
         "x": 9,

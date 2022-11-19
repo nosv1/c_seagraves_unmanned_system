@@ -166,13 +166,10 @@ def init_population(cities, adjacency_mat, n_population):
 pop = init_population(cities, adjacency_mat, 5)
 
 def fitness(self, chromosome):
-    return sum(
-        [
-            self.adjacency_mat[chromosome[i], chromosome[i + 1]]
-            + self.adjacency_mat[0, chromosome[0]]
-            for i in range(len(chromosome) - 1)
-        ]
-    )
+    return (sum([
+        self.adjacency_mat[chromosome[i], chromosome[i + 1]]
+        for i in range(len(chromosome) - 1)]) 
+        + self.adjacency_mat[0, chromosome[0]])  # because we have to start at first node every time
 
 Population.fitness = fitness
 
