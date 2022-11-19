@@ -36,5 +36,7 @@ class PathFinder:
         self._open_set: dict[str, Node] = {}
         self._closed_set: dict[str, Node] = {}
         self._path: list[Node] = []
+        for node in self.grid.nodes.values():
+            node.reset()
 
         self.stopwatch: Stopwatch = Stopwatch()

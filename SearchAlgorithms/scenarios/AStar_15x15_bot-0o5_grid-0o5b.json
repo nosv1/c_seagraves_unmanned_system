@@ -1,5 +1,5 @@
 {
-    "bot_radius": 0.0,
+    "bot_radius": 0.5,
     "grid": {
         "min_x": 0,
         "max_x": 15,
