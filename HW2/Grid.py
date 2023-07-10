@@ -1,5 +1,6 @@
 import logging
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 
 from Node import Node
 from Obstacle import Obstacle
@@ -128,7 +129,7 @@ class Grid:
         :param color: color of the obstacles
         """
         for obstacle in self.obstacles:
-            ax.add_artist(plt.Circle(
+            ax.add_artist(patches.Circle(
                 (obstacle.x, obstacle.y),
                 obstacle.radius,
                 color=color,
